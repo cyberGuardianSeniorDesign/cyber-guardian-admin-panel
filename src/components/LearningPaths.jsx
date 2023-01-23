@@ -8,7 +8,7 @@ export default function LearningPaths({learningPaths}){
     const [loading, setLoading] = React.useState(true)
     React.useEffect(() => {
         const verifyToken = async() => {
-            fetch("http://localhost:5007/isAdminAuth", {
+            fetch(process.env.BACKEND + "isAdminAuth", {
               headers: {
                 "x-access-token": localStorage.getItem("token")
               }

@@ -9,7 +9,7 @@ export default function Checklists({checklists}){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-            fetch("http://localhost:5007/isAdminAuth", {
+            fetch(process.env.BACKEND  + "isAdminAuth", {
               headers: {
                 "x-access-token": localStorage.getItem("token")
               }

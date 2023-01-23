@@ -8,12 +8,6 @@ export default function Content({dbContent, deleteItem}) {
     const [loading, setLoading] = React.useState(true)
     const [base64, setBase64] = React.useState(null)
 
-    const renderImage = () => {
-        let baseStr = Buffer.from(dbContent.buffer).toString('base64');
-        console.log('render image')
-        setBase64(baseStr)
-    }
-
     const deleteContent = () => {
         deleteItem(index)
     }

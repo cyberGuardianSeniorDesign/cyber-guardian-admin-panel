@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import { useEffect } from 'react';
 
 async function loginUser(credentials) {
-  return fetch('http://localhost:5007/login', {
+  return fetch(process.env.BACKEND + 'login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

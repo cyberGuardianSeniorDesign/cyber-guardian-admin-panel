@@ -29,7 +29,7 @@ export default function Home(){
 
     React.useEffect(() => {
       const verifyToken = async() => {
-        fetch("http://localhost:5007/isAdminAuth", {
+        fetch(process.env.BACKEND + "isAdminAuth", {
           headers: {
             "x-access-token": localStorage.getItem("token")
           }
@@ -47,7 +47,7 @@ export default function Home(){
         setLearningPaths(data.learningPaths)  
       }
   
-      fetch("http://localhost:5007/isAdminAuth", {
+      fetch(process.env.BACKEND + "isAdminAuth", {
         headers: {
           "x-access-token": localStorage.getItem("token")
         }

@@ -21,7 +21,7 @@ export default function Articles(){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-            fetch("http://localhost:5007/isAdminAuth", {
+            fetch(process.env.BACKEND + "isAdminAuth", {
               headers: {
                 "x-access-token": localStorage.getItem("token")
               }
@@ -31,7 +31,7 @@ export default function Articles(){
         }
 
         const fetchArticles = async() => {
-            await fetch('http://localhost:5007/articles')
+            await fetch(process.env.BACKEND + 'articles')
             .then(res => res.json())
             .then(articles => setArticles(articles))
         }
