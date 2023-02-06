@@ -20,6 +20,10 @@ export default function CreateArticle(){
         setTitle(e.target.value)
     }
 
+    const handleAuthorChange = e => {
+        setAuthor(e.target.value)
+    }
+
     const addText = () => {
         let temp = content
         temp.push({
@@ -49,6 +53,26 @@ export default function CreateArticle(){
         setContent(temp)
         forceUpdate()
     }
+
+    const post = async() => {
+        let article = {
+            title: title,
+            author: author,
+            content: content
+        }
+
+        console.log(article)
+
+        await axios.post('http://localhost:5007/' + 'articles', article, 
+        {
+            headers: {
+                "x-access-token": localStorage.getItem("token")
+            }
+        })
+        .then(() => navigate('/articles'))
+        .catch(err => console.log(err))
+    }
+
     React.useEffect(() => {
         const verifyToken = async() => {
                 fetch("http://localhost:5007/isAdminAuth", {
@@ -69,20 +93,30 @@ export default function CreateArticle(){
             {!loading ?
             <div> 
                 <header className="content-header">
-                    <h1 className='content-title'>Title: </h1>
-                    <TextField placeholder="Super Interesting Title" onChange={handleTitleChange}/>
+                    <span className="content-info-span">
+                        <h1 className='content-title'>Title: </h1>
+                        <TextField placeholder="Super Interesting Title" onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                    </span>
+                    <span className="content-info-span">
+                        <h2 className="content-author">By:</h2>
+                        <TextField placeholder="Author" onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                    </span>
                 </header>
                 <main className='article-content'>
                 {content.map(data => {
-                    console.log("Render content")
                     return <Content key={data.index} dbContent={data} deleteItem={deleteItem}/>
                 })}
+                <div className="button-div">
+                    <button className='add-txt-btn' onClick={addText}>Add Text</button>
+                    {/* <form onSubmit={addImage}>
+                        <label className="image-upload">
+                            <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addImage(e)}></input>
+                            Add Image
+                        </label>
+                    </form> */}
+                    <button className='post-btn' onClick={post}>POST</button>
+                </div>
                 </main>
-                <button onClick={addText}>Add Text</button>
-                <form onSubmit={addImage}>
-                    <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addImage(e)}></input>
-                </form>
-                <button>POST</button>
             </div>
             :<h1>Loading...</h1>}
         </div>

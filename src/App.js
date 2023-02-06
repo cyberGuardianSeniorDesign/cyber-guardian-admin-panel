@@ -16,6 +16,7 @@ import Login from './components/Login';
 import ViewArticle from './components/ViewArticle'
 import EditArticle from './components/EditArticle'
 import CreateArticle from './components/CreateArticle';
+import CreateChecklist from './components/CreateChecklist';
 
 function App() {
   return (
@@ -30,6 +31,9 @@ function App() {
           <Route path="/articles/edit/:id" element={<EditArticle/>}/>
           <Route path="/articles/view/:id" element={<ViewArticle/>}/>
           <Route path="/articles/create" element={<CreateArticle/>}/>
+          {/* <Route path="/checklists/edit/:id" element={<EditArticle/>}/>
+          <Route path="/checklists/view/:id" element={<ViewArticle/>}/> */}
+          {/* <Route path="/checklists/create" element={<CreateChecklist/>}/> */}
         </Routes>
       </Router>
     </div>

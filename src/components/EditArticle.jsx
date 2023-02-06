@@ -13,10 +13,59 @@ export default function EditArticle(){
     const [title, setTitle] = React.useState('')
     const [author, setAuthor] = React.useState('')
     const [content, setContent] = React.useState([])
+    const [, updateState] = React.useState();
+    const forceUpdate = React.useCallback(() => updateState({}), []);
 
     const handleTitleChange = e => {
         setTitle(e.target.value)
     }
+
+    const handleAuthorChange = e => {
+        setAuthor(e.target.value)
+    }
+
+    const patch = async() => {
+        let updatedArticle = {
+            title: title,
+            author: author,
+            content: content
+        }
+        console.log(article._id)
+        await axios.patch('http://localhost:5007/' + 'articles/' + article._id, updatedArticle,)
+        .then(() => navigate('/articles'))
+        .catch(err => console.log(err))
+    }
+
+    const addText = () => {
+        let temp = content
+        temp.push({
+            index: content.length,
+            contentType: 'text',
+            text: ''
+        })
+        setContent(temp)
+        forceUpdate()
+    }
+
+    const deleteItem = (index) => {
+        let temp = content 
+        temp.splice(index, 1)
+        setContent(temp)
+        forceUpdate()
+    }
+
+    const addImage = async(e) => {
+        let temp = content
+        let imgBuffer = await e.target.files[0].arrayBuffer()
+        temp.push({
+            index: content.length,
+            contentType: 'image',
+            buffer: imgBuffer
+        })
+        setContent(temp)
+        forceUpdate()
+    }
+
     React.useEffect(() => {
         const verifyToken = async() => {
                 fetch(process.env.BACKEND + "isAdminAuth", {
@@ -31,13 +80,17 @@ export default function EditArticle(){
         const loadArticle = () => {
             if(state != undefined || null){
                 setArticle(state.article)
+                setContent(state.article.content)
+                setTitle(state.article.title)
+                setAuthor(state.article.author)
                 window.localStorage.setItem('state', JSON.stringify(state.article))
             } else {
                 const data = window.localStorage.getItem('state')
-                if(data != null)
+                if(data != undefined || null)
                 {
                     //verifyToken(data._id)
                     setArticle(JSON.parse(data))
+
                     verifyToken()
                 } 
             }
@@ -55,15 +108,25 @@ export default function EditArticle(){
             {!loading ?
             <div> 
                 <header className="content-header">
-                    <h1 className='content-title'>Title: </h1>
-                    <TextField defaultValue={article.title} onChange={handleTitleChange}/>
+                    <span className="content-info-span">
+                        <h1 className='content-title'>Title: </h1>
+                        <TextField defaultValue={article.title} onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                    </span>
+                    <span className="content-info-span">
+                        <h2 className="content-author">By:</h2>
+                        <TextField defaultValue={article.author} onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                    </span>
                 </header>
                 <main className='article-content'>
-                {article.content.map(data => {
+                {content.map(data => {
                     
-                    return <Content key={data.index} dbContent={data}/>
+                    return <Content key={data.index} dbContent={data} deleteItem={deleteItem}/>
                 })}
-                {console.log("Render content")}
+                <button onClick={addText}>Add Text</button>
+                <form onSubmit={addImage}>
+                    <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addImage(e)}></input>
+                </form>
+                <button className='post-button' onClick={patch}>Update</button>
                 </main>
             </div>
             :<h1>Loading...</h1>}

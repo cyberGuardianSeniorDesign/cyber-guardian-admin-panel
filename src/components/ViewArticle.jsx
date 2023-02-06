@@ -11,7 +11,7 @@ export default function ViewArticle({dbArticle})
 
     React.useEffect(() => {
         const verifyToken = async() => {
-            fetch(process.env.BACKEND + "isAdminAuth", {
+            fetch('http://localhost:5007/' + "isAdminAuth", {
               headers: {
                 "x-access-token": localStorage.getItem("token")
               }

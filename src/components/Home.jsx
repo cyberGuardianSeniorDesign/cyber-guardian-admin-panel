@@ -2,6 +2,7 @@ import React from "react"
 import { useNavigate } from "react-router-dom";
 import axios from 'axios'
 import { Button } from "@mui/material";
+
 export default function Home(){
   const navigate = useNavigate()
 
@@ -29,7 +30,7 @@ export default function Home(){
 
     React.useEffect(() => {
       const verifyToken = async() => {
-        fetch(process.env.BACKEND + "isAdminAuth", {
+        fetch('http://localhost:5007/' + "isAdminAuth", {
           headers: {
             "x-access-token": localStorage.getItem("token")
           }
@@ -37,7 +38,6 @@ export default function Home(){
         .then(res => res.json())
         .then(data => data.isLoggedIn ? navigate('/'):navigate('/login'))
       }
-
       const getData = async() => {
         await axios.get('http://localhost:5007/' + 'content')
         .then(res => setData(res.data))
@@ -47,12 +47,12 @@ export default function Home(){
         setLearningPaths(data.learningPaths)  
       }
   
-      fetch(process.env.BACKEND + "isAdminAuth", {
+      fetch('http://localhost:5007/' + "isAdminAuth", {
         headers: {
           "x-access-token": localStorage.getItem("token")
         }
        })
-      .then(res => res.json())
+      .then(res =>res.json())
       .then(data => data.isLoggedIn ? navigate("/"): null)
 
       verifyToken()
@@ -61,11 +61,15 @@ export default function Home(){
   
     return(<main className='Home'>
         {!loading ? <div>
-          <h1>Choose a Type of Content to Interact with</h1>
-          <button className='contentButton' onClick={toArticles}>Articles</button>
-          <button className='contentButton' onClick={toChecklists}>Checklists</button>
-          <button className='contentButton' onClick={toLearningPaths}>Learning Paths</button>
-          <button className='contentButton' onClick={toGames}>Games</button>
+          <h1 className='home-h1'>Choose a Type of Content to Interact with</h1>
+          <div className="content-row">
+            <button className='content-button' onClick={toArticles}>Articles</button>
+            <button className='content-button' onClick={toChecklists}>Checklists</button>
+          </div>
+          <div className="content-row">
+            <button className='content-button' onClick={toLearningPaths}>Learning Paths</button>
+            <button className='content-button' onClick={toGames}>Games</button>
+          </div>
         </div>:<span>Loading...</span>}
     </main>)
 }

@@ -5,23 +5,15 @@ import axios from 'axios'
 import PropTypes from 'prop-types'
 import { useEffect } from 'react';
 
-async function loginUser(credentials) {
-  return fetch(process.env.BACKEND + 'login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(credentials)
-  })
-    .then(data => data.json())
-}
-
 export default function Login() {
   const navigate = useNavigate()
 
   const [email, setEmail] = React.useState()
   const [password, setPassword] = React.useState()
   const [token, setToken] = React.useState(false)
+  const [loginFail, setLoginFail] = React.useState(false)
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
 
   const handleLogin = e => {
     e.preventDefault()
@@ -43,6 +35,11 @@ export default function Login() {
     .then(data => {
       localStorage.setItem("token", data.token)
       setToken(data.token)
+      navigate('/')
+      forceUpdate()
+    })
+    .catch(err => {
+      console.log('couldn\'t login')
     })
   }
 
@@ -65,21 +62,17 @@ export default function Login() {
     
   
   return(
+    <div className='login-page'>
     <div className="login-wrapper">
-      <h1>Please Log In</h1>
-      <form onSubmit={handleLogin}>
-        <label>
-          <p>Email</p>
-          <input type="text" onChange={e => {setEmail(e.target.value)}}/>
-        </label>
-        <label>
-          <p>Password</p>
-          <input type="password" onChange={e => {setPassword(e.target.value)}}/>
-        </label>
+      <h1 className='login-h1'>Cyber Guardian Admin Login</h1>
+      <form className='login-form' onSubmit={handleLogin}>
+        <input className='login-input' placeholder='Email...' type="text" onChange={e => {setEmail(e.target.value)}}/>
+        <input className='login-input' placeholder='Password...' type="password" onChange={e => {setPassword(e.target.value)}}/>
         <div>
-          <button type="submit" onSubmit={e => handleLogin(e)}>Submit</button>
+          <button className='login-button' type="submit" onSubmit={e => handleLogin(e)}>Login</button>
         </div>
       </form>
+    </div>
     </div>
   )
 }

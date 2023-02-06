@@ -2,6 +2,299 @@
   text-align: center;
 }
 
+.no-data-text {
+  color: #e3e3e3;
+  font-size: larger;
+}
+
+.button-div {
+  display: flex;
+  justify-content: center;
+  margin: 1.5em;
+}
+
 .content-img {
   width: 50%;
+}
+
+.content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.image-upload {
+  background-color: #e3e3e3;
+  border-radius: 5px;
+  color: #1f1f28 ;
+  cursor: pointer;
+  display: absolute;
+  font-weight: 700;
+  margin: 1.5em;
+  padding: 10px 15px;
+}
+
+.add-txt-btn {
+  background-color: #e3e3e3;
+  border-radius: 5px;
+  border: none;
+  color: #1f1f28 ;
+  cursor: pointer;
+  font-size: medium;
+  font-weight: 600;
+  margin: 0;
+  padding: 10px 15px;
+}
+
+.post-btn {
+  background-color: #e3e3e3;
+  border-radius: 5px;
+  border: none;
+  color: #1f1f28 ;
+  cursor: pointer;
+  font-size: medium;
+  font-weight: 600;
+  margin: auto 1em;
+  padding: 10px 15px;
+}
+
+.create-btn {
+  background-color: #e3e3e3;
+  border-radius: 5px;
+  border: none;
+  color: #1f1f28 ;
+  cursor: pointer;
+  font-size: medium;
+  font-weight: 600;
+  margin: 0.5em 1em;
+  padding: 10px 15px;
+}
+
+.content-info {
+  width: 500px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* Content */
+.text-div {
+  align-items: center;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  background-color: #e3e3e3;
+  margin: 1em;
+  padding: 2em 2em;
+}
+
+.content-delete-btn {
+  background-color: #1f1f28 ;
+  border-radius: 5px;
+  border: none;
+  color: #e3e3e3;
+  cursor: pointer;
+  font-size: medium;
+  font-weight: 600;
+  margin: 1em 1em 0 1em;
+  padding: 10px 15px;
+}
+
+.image-content-div {
+  align-items: center;
+  background-color: #e3e3e3;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  margin: 1em;
+  padding: 2em 2em;
+  width: 60%;
+}
+
+/* Login Page */
+
+.login-page {
+  align-content: center;
+  display: flex;
+  flex-direction: columm;
+  justify-content: center;
+}
+
+.login-wrapper {
+  background-color: #897cbf;
+  border-radius: 15px;
+  box-shadow: 2px 2px 5px #1f1f28  ;
+  display: flex;
+  flex-direction: column;
+  margin-top: 5em;
+  padding: 20px;
+  width: 50%;
+}
+
+.login-h1 {
+  color: #1f1f28 ;
+  font-size: 2.5vw;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-button {
+  background-color: #1f1f28 ;
+  border: none;
+  border-radius: 10px;
+  color: #e3e3e3;
+  font-size: medium;
+  margin-top: 15px;
+  padding: 10px 15px;
+}
+
+.login-input {
+  border-color: #1f1f28 ;
+  border-radius: 10px;
+  box-shadow: none;
+  height: 40px;
+  margin: 10px;
+  width: 50%;
+}
+
+.login-input:focus {
+  border-color: #1f1f28 ;
+  border-radius: 10px;
+}
+
+.login-button:hover {
+  cursor: pointer;
+  opacity: 90%;
+}
+
+/* Home Page */
+.home-h1 {
+  color: #e3e3e3;
+}
+
+.content-button {
+  border: none;
+  border-radius: 15px;
+  color: #1f1f28 ;
+  font-size: larger;
+  font-weight: 600;
+  margin: 1em;
+  padding: 3em;
+  width: 15%;
+  min-width: 300px;
+}
+
+.content-button:hover {
+  cursor: pointer;
+  opacity: 90%;
+}
+
+/* Articles Page */
+
+.articles-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.articles-div {
+  background-color: #e3e3e3;
+  border-radius: 10px;
+  margin-top: 5px;
+  width: 70%;
+}
+
+.article-card {
+  display: flex;
+  padding: 10px;
+}
+
+.article-card-even {
+  background-color: #d2d1d1;
+  display: flex;
+  padding: 10px;
+}
+
+.content-options {
+ 
+  display: flex;
+  justify-content: flex-end;
+  width: 40%;
+}
+
+/* Article Create/Edit */
+
+.article-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content-info-span {
+  align-items: baseline;
+  display: flex;
+  justify-content: center;
+  margin: 1.5em auto;
+}
+
+.content-title {
+  color: #e3e3e3;
+  margin: auto 1em;
+}
+
+.content-author {
+  color: #e3e3e3;
+  margin: auto 1em;
+}
+
+/* Checklist Page */
+
+.checklists-div {
+  background-color: #e3e3e3;
+  border-radius: 10px;
+  margin-top: 5px;
+  width: 70%;
+}
+
+.checklist-card {
+  display: flex;
+  padding: 10px;
+}
+
+.checklist-card-even {
+  background-color: #d2d1d1;
+  display: flex;
+  padding: 10px;
+}
+
+@media screen and (max-width: 798px) {
+  .login-wrapper {
+    background-color: #e3e3e3;
+    border-radius: 15px;
+    margin-top: 5em;
+    padding: 20px;
+    width: 65%;
+  }
+
+  .login-h1 {
+    color: #1f1f28 ;
+    font-size: 130%;
+  }
+
+  .login-info-box {
+    display: flex;
+    margin-left: 12.5%;
+    padding: 10px;
+    width:auto;
+    justify-content: space-between;
+  }
 }
