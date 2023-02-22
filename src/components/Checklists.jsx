@@ -7,6 +7,13 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Tooltip from '@mui/material/Tooltip'
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper'
 
 export default function Checklists(){
     const navigate = useNavigate()
@@ -72,14 +79,23 @@ export default function Checklists(){
             <h1 className="home-h1">CHECKLISTS</h1>
             <button className='create-btn' onClick={handleCreateChecklist}>Create New Checklist</button>
             {checklists.length > 0 ?
-            <div className="checklists-div">
+            
+            <TableContainer component={Paper} sx={{width: '80%', margin: '1em auto', minWidth: '600px'}}>
+                <Table>
+                <TableHead>
+                    <TableRow sx={{width: '100%'}}>
+                        <TableCell sx={{fontSize: 'larger'}}>Title</TableCell>
+                        <TableCell sx={{fontSize: 'larger'}}>Author</TableCell>
+                        <TableCell sx={{fontSize: 'larger'}}>Level</TableCell>
+                        <TableCell></TableCell>
+                    </TableRow>
+                </TableHead>
                 {checklists.map(checklist => {
-                    return <div key={checklist._id} className='checklist-card'>
-                        <div className='content-info'>
-                            <Typography>{checklist.title}</Typography>
-                            <Typography>{checklist.author}</Typography>
-                        </div>
-                        <div>
+                    return <TableRow key={checklist._id} className='checklist-card'>
+                        <TableCell>{checklist.title}</TableCell>
+                        <TableCell>{checklist.author}</TableCell>
+                        <TableCell>{checklist.level}</TableCell>
+                        <TableCell>
                             <Tooltip title='View'>
                                 <IconButton>
                                     <VisibilityIcon/>
@@ -95,10 +111,12 @@ export default function Checklists(){
                                     <DeleteIcon/>
                                 </IconButton>
                             </Tooltip>
-                        </div>
-                    </div>
+                        </TableCell>
+                    </TableRow>
                 })}
-            </div>: <p className='no-data-text'>No Checklists in Database.</p>}
+                </Table>
+            </TableContainer>
+            : <p className='no-data-text'>No Checklists in Database.</p>}
         </div>:<span>Loading...</span>}
     </main>)
 }

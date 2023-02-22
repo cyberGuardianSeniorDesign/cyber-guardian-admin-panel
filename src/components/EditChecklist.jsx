@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Tooltip from '@mui/material/Tooltip'
 
-export default function CreateChecklist(){
+export default function EditChecklist(){
     const navigate = useNavigate()
     const { state } = useLocation()
     const [checklist, setChecklist] = React.useState({})
@@ -77,41 +77,58 @@ export default function CreateChecklist(){
         forceUpdate()
     }
 
-    const post = async() => {
-        let checklist = {
+    const patch = async() => {
+        let updatedChecklist = {
             title: title,
-            author: author,
             level: level,
+            author: author,
             content: listItems
         }
-
-        console.log(checklist)
-
-        await axios.post('http://localhost:5007/' + 'checklists', checklist, 
-        {
-            headers: {
-                "x-access-token": localStorage.getItem("token")
-            }
-        })
+        console.log(updatedChecklist)
+        await axios.patch('http://localhost:5007/' + 'checklists/' + checklist._id, updatedChecklist,)
         .then(() => navigate('/checklists'))
         .catch(err => console.log(err))
     }
 
+
     React.useEffect(() => {
         const verifyToken = async() => {
-                fetch("http://localhost:5007/isAdminAuth", {
+                fetch(process.env.BACKEND + "isAdminAuth", {
                 headers: {
                     "x-access-token": localStorage.getItem("token")
                 }
                 })
                 .then(res => res.json())
-                .then(data => data.isLoggedIn ? navigate('/checklists/create'):navigate('/login'))
+                .then(data => data.isLoggedIn ? navigate('/checklists/edit/' + checklist._id):navigate('/login'))
         }
 
-        verifyToken()
+        const loadChecklist = () => {
+            if(state != undefined || null){
+                setChecklist(state.checklist)
+                setListItems(state.checklist.content)
+                setTitle(state.checklist.title)
+                setAuthor(state.checklist.author)
+                setLevel(state.checklist.level)
+                window.localStorage.setItem('state', JSON.stringify(state.checklist))
+            } else {
+                const data = window.localStorage.getItem('state')
+                if(data != undefined || null)
+                {
+                    //verifyToken(data._id)
+                    setChecklist(JSON.parse(data))
+
+                    verifyToken()
+                } 
+            }
+        }
+
+        loadChecklist()
         setLoading(false)
     }, [])
 
+    React.useEffect(() => {
+        window.localStorage.setItem('state', JSON.stringify(checklist))
+    }, [checklist])
 
     return<div>
             {!loading ?
@@ -119,11 +136,11 @@ export default function CreateChecklist(){
                 <header className="content-header">
                     <span className="content-info-span">
                         <h1 className='content-title'>Title: </h1>
-                        <TextField placeholder="Super Interesting Title" onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                        <TextField placeholder="Super Interesting Title" defaultValue={checklist.title} onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
                     </span>
                     <span className="content-info-span">
                         <h2 className="content-author">By:</h2>
-                        <TextField placeholder="Author" onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                        <TextField placeholder="Author" defaultValue={checklist.author} onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
                     </span>
                     <FormControl sx={{ m: 1, minWidth: 100}}>
                         <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
@@ -148,7 +165,7 @@ export default function CreateChecklist(){
                         <IconButton onClick={() => deleteItem(data.index)}>
                             <DeleteIcon sx={{color: 'white'}}/>
                         </IconButton>
-                        <h3 className="list-item-h3">List Item {data.index + 1}: </h3><TextField onChange={e => handleListItemChange(e, data.index)} sx={{backgroundColor: '#e3e3e3', borderRadius: '5px', height: '100%', width: '80%'}}/>
+                        <h3 className="list-item-h3">List Item {data.index + 1}: </h3><TextField defaultValue={data.text} onChange={e => handleListItemChange(e, data.index)} sx={{backgroundColor: '#e3e3e3', borderRadius: '5px', height: '100%', width: '80%'}}/>
                     </div>
                 })}
                 <div className="button-div">
@@ -159,7 +176,7 @@ export default function CreateChecklist(){
                             Add Image
                         </label>
                     </form> */}
-                    <button className='post-btn' onClick={post}>POST</button>
+                    <button className='post-btn' onClick={patch}>Update</button>
                 </div>
                 </main>
             </div>

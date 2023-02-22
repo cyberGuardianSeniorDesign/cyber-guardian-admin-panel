@@ -34,8 +34,9 @@ input[type="file"] {
   cursor: pointer;
   display: absolute;
   font-weight: 700;
-  margin: 1.5em;
+  margin: 1.5em 1.5em 0 1.5em;
   padding: 10px 15px;
+  line-height: 50px;
 }
 
 .add-txt-btn {
@@ -125,7 +126,7 @@ input[type="file"] {
 }
 
 .login-wrapper {
-  background-color: #897cbf;
+  background-color: #e3e3e3;
   border-radius: 15px;
   box-shadow: 2px 2px 5px #1f1f28  ;
   display: flex;
@@ -276,6 +277,66 @@ input[type="file"] {
   padding: 10px;
 }
 
+/* Checklist Create/Edit Page */ 
+
+.checklist-item-div {
+  display: flex;
+  flex-direction: row;
+  margin: 15px auto;
+  width: 80%;
+}
+
+.list-item-h3 {
+  color: #e3e3e3;
+  margin-right: 5px;
+  white-space: nowrap;
+}
+
+/* Learning Path Create/Edit */
+.modal-div {
+  background-color: #e3e3e3;
+  border-radius: 15px;
+  width: 70%;
+  margin: 1em auto;
+  padding: 1em 1em 1em 4em;
+  
+}
+
+.content-title-h3 {
+  color: #1f1f28;
+  text-align: left;
+  margin: .5em 1em 2em 2em;
+}
+
+.learning-path-content-div {
+  background-color: #e3e3e3;
+  border-radius: 10px;
+  color: #1f1f28;
+  margin: 1em auto;
+  min-width: 500px;
+  padding: 1em 2em;
+  width: 70%;
+}
+
+.content-title-h3::first-letter {
+  text-transform:capitalize;
+}
+
+.content-link {
+  text-overflow: ellipsis;
+}
+
+.dark-btn {
+  background-color:#1f1f28 ;
+  border-radius: 5px;
+  border: none;
+  color: #e3e3e3;
+  cursor: pointer;
+  font-size: medium;
+  font-weight: 600;
+  margin: auto 1em;
+  padding: 10px 15px;
+}
 @media screen and (max-width: 798px) {
   .login-wrapper {
     background-color: #e3e3e3;
@@ -296,5 +357,9 @@ input[type="file"] {
     padding: 10px;
     width:auto;
     justify-content: space-between;
+  }
+
+  .modal-div {
+    width: 80%;
   }
 }
