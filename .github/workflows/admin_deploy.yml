@@ -1,6 +1,9 @@
 name: Build and Deploy to Admin
-on: [push]
-  
+on: 
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
   deploy:
@@ -17,6 +20,6 @@ jobs:
           script: |
             cd ~/test
             ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts # gather SSH public keys from servers
-            # git clone git@github.com:cyberGuardianSeniorDesign/cyber-guardian-admin-panel.git
+            # git clone cgAdminSide:cyberGuardianSeniorDesign/cyber-guardian-admin-panel.git
             git clone https://github.com/cyberGuardianSeniorDesign/cyber-guardian-admin-panel.git
             echo 'Successful deployment to Digital Ocean'
