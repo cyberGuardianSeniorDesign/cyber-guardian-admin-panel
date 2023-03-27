@@ -6,22 +6,25 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select'
-import IconButton from '@mui/material/IconButton'
-import DeleteIcon from '@mui/icons-material/Delete'
-import Tooltip from '@mui/material/Tooltip'
-import { v4 as uuid } from 'uuid';
+import NewContent from "./NewContent"
+import { Editor } from 'react-draft-wysiwyg';
+import { EditorState } from "draft-js";
 
-export default function CreateChecklist(){
+
+
+window.Buffer = window.Buffer || require("buffer").Buffer;
+
+export default function Test(){
     const navigate = useNavigate()
     const { state } = useLocation()
-    const [checklist, setChecklist] = React.useState({})
+    const [article, setArticle] = React.useState({})
     const [loading, setLoading] = React.useState(true)
     const [title, setTitle] = React.useState('')
     const [author, setAuthor] = React.useState('')
     const [level, setLevel] = React.useState('Apprentice')
-    const [desc, setDesc] = React.useState('')
-    const [listItems, setListItems] = React.useState([{index: 0, contentType: 'text', text: ''}])
     const [images, setImages] = React.useState([])
+    const [content, setContent] = React.useState([{index: 0, contentType: 'text', text: ''}])
+    const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
@@ -38,83 +41,89 @@ export default function CreateChecklist(){
         console.log(event.target.value)
     }
 
-    const handleDescriptionChange = (event) => {
-        setDesc(event.target.value)
+    const handleEditorStateChange = (editorState) => {
+        setEditorState(editorState)
     }
 
-    const handleListItemChange = (event, id) => {
-        let temp = listItems
-
-        temp[id].text = event.target.value
-
-        setListItems(temp)
-    }
-
-    const addListItem = () => {
-        let temp = listItems
+    const addText = () => {
+        let temp = content
         temp.push({
-            index: listItems.length,
+            index: content.length,
             contentType: 'text',
             text: ''
         })
-
-        setListItems(temp)
-        forceUpdate()
+        
+        console.log("Add")
+        console.log(temp)
+        setContent([...temp])
     }
 
     const deleteItem = (index) => {
-        let temp = listItems 
-        temp.splice(index, 1)
-        for(let i = index; i < temp.length; i++){
-            temp[i].index = i 
+        let temp = content 
+        let arrIdx = temp.findIndex(data =>  data.index == index)
+
+        temp.splice(arrIdx, 1)
+        console.log("Delete")
+        setContent([...temp])
+        adjustIndexes(index, temp)
+    }
+
+    const adjustIndexes = (index, temp) => {
+        if(index != content.length-2){
+            for(let i = index; i < temp.length; i++){
+                temp[i].index = i
+            }
         }
-         console.log(temp)
-        setListItems(temp)
-        forceUpdate()
+        console.log(temp)
+        setContent([...temp])
     }
 
     const addImage = async(e) => {
         let img = e.target.files[0]
 
         
-        let temp = listItems
-        let key = uuid()
-        let imgKey = uuid()
+        let temp = content
         temp.push({
-            index: key,
+            index: content.length,
             contentType: 'image',
-            text: imgKey + img.name,
-            caption: '',
-            file: img,
-            new: true
+            text: article._id + img.name,
+            file: img
         })
 
-        let imgObj = {
-            file: img,
-            key: imgKey
-        }
-
         let tempImages = images
-        tempImages.push(imgObj)
+        tempImages.push(img)
 
-        setListItems([...temp])
-        setImages([...tempImages])
+        console.log(temp)
+        setContent(temp)
+        setImages(tempImages)
+        forceUpdate()
     }
 
     const post = async() => {
-        let checklist = {
+        let temp = content
+        temp.forEach(data => {
+            if(data.contentType == 'image'){
+                data = {
+                    index: data.index,
+                    contentType: data.contentType,
+                    text: data.text
+                }
+            }
+        })
+
+        let postContent =  temp
+        console.log(postContent)
+
+        let article = {
             title: title,
             author: author,
             level: level,
-            description: desc,
-            content: listItems
+            content: postContent
         }
 
-        console.log(checklist)
-
-        images.forEach(async(imgObj) => {
+        images.forEach(async(img) => {
             const formData = new FormData()
-            formData.append(imgObj.key + imgObj.file.name, imgObj.file)
+            formData.append(article._id + img.file.name, img.file)
 
             const config = {
                 headers: {
@@ -131,14 +140,13 @@ export default function CreateChecklist(){
 
         })
 
-
-        await axios.post('http://localhost:5007/' + 'checklists', checklist, 
+        await axios.post('http://localhost:5007/' + 'articles', article, 
         {
             headers: {
                 "x-access-token": localStorage.getItem("token")
             }
         })
-        .then(() => navigate('/checklists'))
+        .then(() => navigate('/articles'))
         .catch(err => console.log(err))
     }
 
@@ -150,7 +158,7 @@ export default function CreateChecklist(){
                 }
                 })
                 .then(res => res.json())
-                .then(data => data.isLoggedIn ? navigate('/checklists/create'):navigate('/login'))
+                .then(data => data.isLoggedIn ? navigate('/test/create'):navigate('/login'))
         }
 
         verifyToken()
@@ -161,16 +169,27 @@ export default function CreateChecklist(){
     return<div>
             {!loading ?
             <div> 
+            <Editor
+            editorState={editorState}
+            wrapperClassName="wrapper-class"
+            editorClassName="editor-class"
+            toolbarClassName="toolbar-class"
+            toolbar={
+                {options: ['inline', 'blockType', 'fontSize']}
+              }
+            onEditorStateChange={handleEditorStateChange}
+            
+            />
                 <header className="content-header">
                     <span className="content-info-span">
                         <h1 className='content-title'>Title: </h1>
-                        <TextField placeholder="Super Interesting Title" onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '30%', minWidth: '200px'}}/>
+                        <TextField placeholder="Super Interesting Title" onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
                     </span>
                     <span className="content-info-span">
-                        <h1 className="content-author">By:</h1>
-                        <TextField placeholder="Author" onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '30%', minWidth: '200px'}}/>
+                        <h2 className="content-author">By:</h2>
+                        <TextField placeholder="Author" onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
                     </span>
-                    <FormControl sx={{ m: "2em 0", minWidth: 100}}>
+                    <FormControl sx={{ m: 1, minWidth: 100}}>
                         <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
                         <Select
                         labelId="demo-simple-select-label"
@@ -186,28 +205,20 @@ export default function CreateChecklist(){
                             <MenuItem value={'Expert'}>Expert</MenuItem>
                         </Select>
                     </FormControl>
-                    <span className="content-info-span">
-                        <h2 className='content-title'>Description: </h2>
-                        <TextField placeholder="Checklist description..." onChange={handleDescriptionChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '65%'}}/>
-                    </span>
                 </header>
-                <main className='checklist-content'>
-                {listItems.map(data => {
-                    return <div className='checklist-item-div'>
-                        <IconButton onClick={() => deleteItem(data.index)}>
-                            <DeleteIcon sx={{color: 'white'}}/>
-                        </IconButton>
-                        <TextField placeholder="Checklist Item" onChange={e => handleListItemChange(e, data.index)} sx={{backgroundColor: '#e3e3e3', borderRadius: '5px', height: '100%', width: '80%'}}/>
-                    </div>
+                <main className='article-content'>
+                {console.log()}
+                {content.map(data => {
+                    return <NewContent key={data.index} current={data} deleteItem={deleteItem}/>
                 })}
                 <div className="button-div">
-                    <button className='add-txt-btn' onClick={addListItem}>Add List Item</button>
-                    <form onSubmit={addImage}>
+                    <button className='add-txt-btn' onClick={addText}>Add Text Section</button>
+                     <form onSubmit={addImage}>
                         <label className="image-upload">
                             <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addImage(e)}></input>
                             Add Image
                         </label>
-                    </form>
+                    </form> 
                     <button className='post-btn' onClick={post}>POST</button>
                 </div>
                 </main>

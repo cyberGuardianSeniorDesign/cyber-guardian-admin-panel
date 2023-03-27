@@ -2,6 +2,20 @@
   text-align: center;
 }
 
+.modal {
+  background-color: #e3e3e3;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  margin: 10em auto;
+  min-width: 200px;
+  padding: 1em 2em;
+}
+
+
 .no-data-text {
   color: #e3e3e3;
   font-size: larger;
@@ -14,13 +28,14 @@
 }
 
 .content-img {
-  width: 50%;
+  width: 50vw;
 }
 
 .content {
   align-items: center;
   display: flex;
   flex-direction: column;
+  width: 80vw;
 }
 
 input[type="file"] {
@@ -113,7 +128,6 @@ input[type="file"] {
   flex-direction: column;
   margin: 1em;
   padding: 2em 2em;
-  width: 60%;
 }
 
 /* Login Page */
@@ -240,23 +254,31 @@ input[type="file"] {
   align-items: center;
 }
 
+.content-header{
+  margin-bottom: 2em;
+}
+
 .content-info-span {
   align-items: baseline;
+  margin-left: 4em; 
   display: flex;
-  justify-content: center;
-  margin: 1.5em auto;
 }
 
 .content-title {
   color: #e3e3e3;
-  margin: auto 1em;
+  margin-right: 20px;
+  text-align: left;
 }
 
 .content-author {
   color: #e3e3e3;
-  margin: auto 1em;
+  margin-right: 50px;
 }
 
+.text-div {
+  display: flex;
+  flex-direction: column;
+}
 /* Checklist Page */
 
 .checklists-div {
@@ -275,6 +297,10 @@ input[type="file"] {
   background-color: #d2d1d1;
   display: flex;
   padding: 10px;
+}
+
+.checklist-view-div {
+  padding: 1em;
 }
 
 /* Checklist Create/Edit Page */ 
@@ -337,6 +363,80 @@ input[type="file"] {
   margin: auto 1em;
   padding: 10px 15px;
 }
+
+/* VIEW PAGES */
+
+.view-page {
+  width:100vw;
+  height: fit-content;
+  background-color: #ffffff;
+  padding: 1em;
+  position:absolute;
+  top:0px;
+  right:0px;
+  bottom:0px;
+  left:0px;
+}
+
+.view-page-title {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.view-page-description {
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: large;
+}
+
+.view-page-text {
+  text-align: left;
+  margin-top: .5em, 1em;
+  padding: 1em;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: large;
+  line-height: 35px;
+}
+
+.view-page-img {
+  margin: 0 auto;
+  padding: 1em;
+  width: 60vw;
+  min-width: 300px;
+}
+
+.view-page-img-div {
+  margin: 2em auto;
+  text-align: center;
+}
+
+.view-page-img-h4 {
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: medium;
+  margin-top: .5em;
+}
+
+.view-page-h2 {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  margin-top: .5em;
+  padding-left: .5em;
+  text-align: left;
+}
+
+.wrapper-class {
+  padding: 1rem;
+  border: 1px solid #ccc;
+}
+
+.editor-class {
+  background-color:white;
+  padding: 1rem;
+  border: 1px solid #ccc;
+}
+
+.toolbar-class {
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
 @media screen and (max-width: 798px) {
   .login-wrapper {
     background-color: #e3e3e3;
@@ -361,5 +461,9 @@ input[type="file"] {
 
   .modal-div {
     width: 80%;
+  }
+
+  .view-page-h1 {
+    font-size: medium;
   }
 }

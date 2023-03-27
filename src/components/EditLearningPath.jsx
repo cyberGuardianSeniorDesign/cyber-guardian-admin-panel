@@ -19,6 +19,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper'
+import { v4 as uuid } from 'uuid';
 export default function EditLearningPath(){
     const navigate = useNavigate()
     const { state } = useLocation()
@@ -89,10 +90,13 @@ export default function EditLearningPath(){
             data = games.find(game => game._id == radioValue)
         }
 
+        let key = uuid()
+
         let newContent = {
-            index: temp.length,
+            index: key,
             contentType: typeRadio,
             title: data.title,
+            img: data.thumbnail,
             description: '',
             link: 'cyberguardian.info/' + typeRadio + 's/' + data._id
         }
@@ -104,31 +108,19 @@ export default function EditLearningPath(){
 
     const handleContentDescChange = (event, index) => {
         let temp = content
-        temp[index].description = event.target.value
+        let idx = temp.findIndex(item => item.index == index)
+        temp[idx].description = event.target.value
         setContent(temp)
         forceUpdate()
     }
 
     const deleteItem = (index) => {
         let temp = content 
-        temp.splice(index, 1)
-        for(let i = index; i < temp.length; i++){
-            temp[i].index = i 
-        }
-         console.log(temp)
-        setContent(temp)
-        forceUpdate()
-    }
-
-    const addImage = async(e) => {
-        let temp = content
-        temp.push({
-            index: content.length,
-            contentType: 'image',
-            fileName: e.target.files[0].fileName
-        })
-        setContent(temp)
-        forceUpdate()
+        let idx = temp.findIndex(item => item.index == index)
+        temp.splice(idx, 1)
+        
+        console.log(temp)
+        setContent([...temp])
     }
 
     const handleTypeChange = (event) => {

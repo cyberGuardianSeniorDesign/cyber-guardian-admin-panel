@@ -5,14 +5,21 @@ import { alpha, styled } from '@mui/material/styles';
 import axios from "axios";
 
 
-export default function Content({dbContent, deleteItem}) {
+export default function Content({dbContent, deleteItem, itemKey}) {
     const [index, setIndex] = React.useState(dbContent.index)
     const [content, setContent] = React.useState(dbContent)
     const [loading, setLoading] = React.useState(true)
-    const [link, setLink] = React.useState('')
+
+    //for text section
+    const [header, setHeader] = React.useState(dbContent.header || '')
+
+    //for images
+    const [link, setLink] = React.useState('') 
+    const [caption, setCaption] = React.useState(dbContent.caption || '')
+    
 
     const deleteContent = () => {
-        deleteItem(index)
+        deleteItem(content)
     }
 
     const updateContent = e =>
@@ -21,6 +28,19 @@ export default function Content({dbContent, deleteItem}) {
         temp.text = e.target.value
         setContent(temp)
     }
+
+    const updateCaption = e => {
+        let temp = content
+        temp.caption = e.target.value
+        setContent(temp)
+    }
+
+    const updateHeader = e => {
+        let temp = content
+        temp.header = e.target.value
+        setContent(temp)
+    }
+
     useEffect(() => {
         const loadContent = async() => {
 
@@ -28,14 +48,17 @@ export default function Content({dbContent, deleteItem}) {
                 setTimeout(loadContent, 500)
             } else if(content.contentType == 'image') {
                 await axios.get('http://localhost:5007/' + 'file/' + dbContent.text)
-                .then(res => setLink("https://storage.googleapis.com/cyber-guardian-images/" + dbContent.text))
+                .then(res => {
+                    setLink("https://storage.googleapis.com/cyber-guardian-images/" + dbContent.text)
+                    setLoading(false)
+                })
                 .catch(() =>{
                     setTimeout(loadContent, 1000)
                 }
 
                 )
                 //setBase64(baseStr)
-                setLoading(false)
+                
             }
             else{
                 setLoading(false)
@@ -50,11 +73,13 @@ export default function Content({dbContent, deleteItem}) {
         <div className="content">
             {content.contentType == "text" ?
             <div className="text-div">
-            <TextField onChange={updateContent} defaultValue={content.text} rows={10} multiline sx={{width: '60vw'}}/>
+            <TextField onChange={updateHeader} placeholder='Header (Optional)' defaultValue={content.header} multiline sx={{width: '80vw', margin: '1em .5em'}}/>
+            <TextField onChange={updateContent} defaultValue={content.text} rows={10} multiline sx={{width: '80vw'}}/>
             <button className='content-delete-btn' onClick={deleteContent}>Delete</button>
             </div>:
             <div className='image-content-div'>
                 {link ? <img className='content-img' src={link} alt=""/>: null}
+                <TextField onChange={updateCaption} placeholder='Caption (Optional)' defaultValue={content.caption} multiline sx={{width: '80vw', margin: '1em .5em'}}/>
                 <button className='content-delete-btn' onClick={deleteContent}>Delete</button>
             </div>
             }

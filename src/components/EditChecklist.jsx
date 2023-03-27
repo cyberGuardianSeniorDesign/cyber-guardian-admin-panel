@@ -9,7 +9,9 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Tooltip from '@mui/material/Tooltip'
-
+import { v4 as uuid } from 'uuid';
+import Content from "./Content";
+import NewContent from "./NewContent";
 export default function EditChecklist(){
     const navigate = useNavigate()
     const { state } = useLocation()
@@ -18,7 +20,10 @@ export default function EditChecklist(){
     const [title, setTitle] = React.useState('')
     const [author, setAuthor] = React.useState('')
     const [level, setLevel] = React.useState('Apprentice')
+    const [desc, setDesc] = React.useState('')
     const [listItems, setListItems] = React.useState([{index: 0, contentType: 'text', text: ''}])
+    const [newItems, setNewItems] = React.useState([])
+    const [images, setImages] = React.useState([])
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
@@ -35,55 +40,140 @@ export default function EditChecklist(){
         console.log(event.target.value)
     }
 
-    const handleListItemChange = (event, id) => {
+    const handleDescriptionChange = (event) => {
+        setDesc(event.target.value)
+    }
+    
+    const handleListItemChange = (event, data) => {
         let temp = listItems
 
-        temp[id].text = event.target.value
+        let itemIdx = temp.indexOf(data)
+
+        temp[itemIdx].text = event.target.value
 
         setListItems(temp)
+    }
+
+    const handleNewItemChange = (event, data) => {
+        let temp = newItems
+
+        let itemIdx = temp.indexOf(data)
+
+        temp[itemIdx].text = event.target.value
+
+        setNewItems(temp)
     }
 
     const addListItem = () => {
-        let temp = listItems
+        let temp = newItems
+        let key = uuid()
         temp.push({
-            index: listItems.length,
+            index: key,
             contentType: 'text',
-            text: ''
+            text: '',
+            new: true
         })
 
-        setListItems(temp)
+        setNewItems([...temp])
         forceUpdate()
     }
 
-    const deleteItem = (index) => {
-        let temp = listItems 
-        temp.splice(index, 1)
-        for(let i = index; i < temp.length; i++){
-            temp[i].index = i 
+    const deleteItem = (item) => {
+        let temp
+
+        if(item.new){
+            temp = newItems.filter(content => content.index !== item.index)
         }
-         console.log(temp)
-        setListItems(temp)
-        forceUpdate()
+        else {
+            temp = listItems.filter(content => content.index !== item.index)
+        }
+
+        if(item.contentType == 'image' && listItems.find(content => content.index == item.index)){
+            axios.delete('http://localhost:5007/' + 'file/' + item.text)
+            .then(res => console.log("File Deleted"))
+        } else if(item.contentType == 'image') {
+            let tempImg = images.filter(imgObj => imgObj.key != temp.key)
+            setImages([...tempImg])
+        }
+
+        if(item.new){
+            setNewItems([...temp])  
+        }
+        else {
+            setListItems([...temp])  
+        }
     }
 
     const addImage = async(e) => {
-        let temp = listItems
+        let img = e.target.files[0]
+
+        let temp = newItems
+        let key = uuid()
+        let imgKey = uuid()
         temp.push({
-            index: listItems.length,
+            index: key,
             contentType: 'image',
-            fileName: e.target.files[0].fileName
+            text: imgKey + img.name,
+            caption: '',
+            file: img,
+            key: imgKey,
+            new: true
         })
-        setListItems(temp)
-        forceUpdate()
+
+        let imgObj = {
+            file: img,
+            key: imgKey
+        }
+
+        let tempImages = images
+        tempImages.push(imgObj)
+
+        setNewItems([...temp])
+        setImages([...tempImages])
     }
 
     const patch = async() => {
+        let tempNew = newItems
+
+        tempNew.forEach(content => {
+            if(content.contentType === 'text'){
+                delete content.new
+            } else {
+                delete content.new
+                delete content.file
+                delete content.key
+            }
+        })
+
+        let tempCurrent = listItems
+        let final = tempCurrent.concat(tempNew)
+
         let updatedChecklist = {
             title: title,
             level: level,
             author: author,
-            content: listItems
+            content: final
         }
+
+        images.forEach(async(imgObj) => {
+            const formData = new FormData()
+            formData.append(imgObj.key + imgObj.file.name, imgObj.file)
+
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            };
+
+            await axios.post("http://localhost:5007/file",formData,config)
+                .then((response) => {
+                    console.log("The file is successfully uploaded");
+                }).catch((error) => {
+                    console.log(error)
+                }); 
+
+        })
+
         console.log(updatedChecklist)
         await axios.patch('http://localhost:5007/' + 'checklists/' + checklist._id, updatedChecklist,)
         .then(() => navigate('/checklists'))
@@ -142,6 +232,12 @@ export default function EditChecklist(){
                         <h2 className="content-author">By:</h2>
                         <TextField placeholder="Author" defaultValue={checklist.author} onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
                     </span>
+                    <form onSubmit={addImage}>
+                        <label className="image-upload">
+                            <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addImage(e)}></input>
+                            Add Image
+                        </label>
+                    </form>
                     <FormControl sx={{ m: 1, minWidth: 100}}>
                         <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
                         <Select
@@ -158,24 +254,49 @@ export default function EditChecklist(){
                             <MenuItem value={'Expert'}>Expert</MenuItem>
                         </Select>
                     </FormControl>
+                    <span className="content-info-span">
+                        <h2 className='content-title'>Description: </h2>
+                        <TextField defaultValue={checklist.description} placeholder="Checklist description..." onChange={handleDescriptionChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '65%'}}/>
+                    </span>
                 </header>
                 <main className='checklist-content'>
                 {listItems.map(data => {
-                    return <div className='checklist-item-div'>
-                        <IconButton onClick={() => deleteItem(data.index)}>
-                            <DeleteIcon sx={{color: 'white'}}/>
-                        </IconButton>
-                        <h3 className="list-item-h3">List Item {data.index + 1}: </h3><TextField defaultValue={data.text} onChange={e => handleListItemChange(e, data.index)} sx={{backgroundColor: '#e3e3e3', borderRadius: '5px', height: '100%', width: '80%'}}/>
-                    </div>
+                    if(data.contentType == 'text'){
+                        return <div key={data.index} className='checklist-item-div'>
+                            <IconButton onClick={() => deleteItem(data)}>
+                                <DeleteIcon sx={{color: 'white'}}/>
+                            </IconButton>
+                            <TextField defaultValue={data.text} placeholder="Checklist Item" onChange={e => handleListItemChange(e, data)} sx={{backgroundColor: '#e3e3e3', borderRadius: '5px', height: '100%', width: '80%'}}/>
+                        </div>
+                    } else {
+                        return <div key={data.index} className='checklist-item-div'>
+                        <Content key={data.index} dbContent={data} deleteItem={deleteItem} itemKey={data.key}/>
+                        </div>
+                    }
+                })}
+
+                {newItems.map(data => {
+                    if(data.contentType == 'text'){
+                        return <div key={data.index} className='checklist-item-div'>
+                            <IconButton onClick={() => deleteItem(data)}>
+                                <DeleteIcon sx={{color: 'white'}}/>
+                            </IconButton>
+                            <TextField defaultValue={data.text} onChange={e => handleNewItemChange(e, data)} sx={{backgroundColor: '#e3e3e3', borderRadius: '5px', height: '100%', width: '80%'}}/>
+                        </div>
+                    } else {
+                        return <div key={data.index} className='checklist-item-div'>
+                            <NewContent key={data.index} current={data} deleteItem={deleteItem} itemKey={data.key}/>
+                        </div>
+                    }
                 })}
                 <div className="button-div">
                     <button className='add-txt-btn' onClick={addListItem}>Add List Item</button>
-                    {/* <form onSubmit={addImage}>
+                    <form onSubmit={addImage}>
                         <label className="image-upload">
                             <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addImage(e)}></input>
                             Add Image
                         </label>
-                    </form> */}
+                    </form>
                     <button className='post-btn' onClick={patch}>Update</button>
                 </div>
                 </main>

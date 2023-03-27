@@ -6,7 +6,9 @@ import Content from "./Content"
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select'
+import Select from '@mui/material/Select'
+import NewContent from "./NewContent"
+import { v4 as uuid } from 'uuid';
 
 export default function EditArticle(){
     const navigate = useNavigate()
@@ -17,36 +19,48 @@ export default function EditArticle(){
     const [author, setAuthor] = React.useState('')
     const [level, setLevel] = React.useState('Apprentice')
     const [content, setContent] = React.useState([])
+    const [newContent, setNewContent] = React.useState([])
     const [images, setImages] = React.useState([])
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
 
     const handleTitleChange = e => {
         setTitle(e.target.value)
     }
 
     const handleAuthorChange = e => {
-        setAuthor(e.target.value)
+        setAuthor(e.target.value) 
     }
 
     const handleLevelChange = (event) => {
         setLevel(event.target.value)
-        console.log(event.target.value)
     }
 
     const patch = async() => {
+        let tempNew = newContent
+
+        tempNew.forEach(content => {
+            if(content.contentType === 'text'){
+                delete content.new
+            } else {
+                delete content.new
+                delete content.file
+            }
+        })
+
+        let tempCurrent = content
+        let final = tempCurrent.concat(tempNew)
+        console.log(final)
         let updatedArticle = {
             title: title,
             author: author,
             level: level,
-            content: content
+            content: final
         }
-        console.log(article._id)
+
         await axios.patch('http://localhost:5007/' + 'articles/' + article._id, updatedArticle,)
         .then(() => navigate('/articles'))
         .catch(err => console.log(err))
 
-        images.forEach(img => {
+        images.forEach(async(img) => {
             const formData = new FormData()
             formData.append(article._id + img.name, img)
 
@@ -56,7 +70,7 @@ export default function EditArticle(){
                 }
             };
 
-            axios.post("http://localhost:5007/file",formData,config)
+            await axios.post("http://localhost:5007/file",formData,config)
                 .then((response) => {
                     console.log("The file is successfully uploaded");
                 }).catch((error) => {
@@ -66,70 +80,73 @@ export default function EditArticle(){
     }
 
     const addText = () => {
-        let temp = content
+        let temp = newContent
+        let key = uuid()
         temp.push({
-            index: content.length,
+            index: key,
             contentType: 'text',
-            text: ''
+            text: '',
+            header: '',
+            new: true
         })
-        setContent(temp)
-        forceUpdate()
+        setNewContent([...temp])
     }
 
-    const deleteItem = (index) => {
-        let temp = content 
-        if(temp[index].contentType == 'image'){
-            axios.delete('http://localhost:5007/' + 'file/' + temp[index].text)
+    const deleteItem = (item) => {
+        let temp
+
+        if(item.new){
+            temp = newContent.filter(content => content.index !== item.index)
+        }
+        else {
+            temp = content.filter(content => content.index !== item.index)
+        }
+
+        if(item.contentType == 'image' && content.find(content => content.index == item.index)){
+            axios.delete('http://localhost:5007/' + 'file/' + item.text)
             .then(res => console.log("File Deleted"))
         }
-        temp.splice(index, 1)
-        setContent(temp)
-        forceUpdate()
+
+        if(item.new){
+            setNewContent([...temp])  
+        }
+        else {
+            setContent([...temp])  
+        }
     }
 
-    const addImage = async(e) => {
+    const addImage = e => {
         let img = e.target.files[0]
 
-        const formData = new FormData()
-        formData.append(article._id + img.name, img)
-
-        const config = {
-            headers: {
-                'content-type': 'multipart/form-data'
-            }
-        };
-
-        axios.post("http://localhost:5007/file",formData,config)
-            .then((response) => {
-                console.log("The file is successfully uploaded");
-            }).catch((error) => {
-                console.log(error)
-            }); 
         
-        let temp = content
+        let temp = newContent
+        let key = uuid()
         temp.push({
-            index: content.length,
+            index: key,
             contentType: 'image',
-            text: article._id + img.name
+            text: article._id + img.name,
+            caption: '',
+            file: img,
+            new: true
         })
 
         let tempImages = images
         tempImages.push(img)
 
-        setContent(temp)
-        setImages(tempImages)
-        forceUpdate()
+        setNewContent([...temp])
+        setImages([...tempImages])
     }
+
 
     React.useEffect(() => {
         const verifyToken = async() => {
-                fetch(process.env.BACKEND + "isAdminAuth", {
-                headers: {
-                    "x-access-token": localStorage.getItem("token")
-                }
-                })
-                .then(res => res.json())
-                .then(data => data.isLoggedIn ? navigate('/articles/edit/' + article._id):navigate('/login'))
+            fetch(process.env.BACKEND + "isAdminAuth", {
+            headers: {
+                "x-access-token": localStorage.getItem("token")
+            }
+            })
+            .then(res => res.json())
+            .then(data => data.isLoggedIn ? navigate('/articles/edit/' + article._id):navigate('/login'))
         }
 
         const loadArticle = () => {
@@ -163,7 +180,6 @@ export default function EditArticle(){
     return<div>
             {!loading ?
             <div> 
-                {console.log(content)}
                 <header className="content-header">
                     <span className="content-info-span">
                         <h1 className='content-title'>Title: </h1>
@@ -192,8 +208,11 @@ export default function EditArticle(){
                 </header>
                 <main className='article-content'>
                 {content.map(data => {
-                    
-                    return <Content key={data.index} dbContent={data} deleteItem={deleteItem}/>
+                    return <Content key={data.index} dbContent={data} deleteItem={deleteItem} itemKey={data.key}/>
+                })}
+
+                {newContent.map(data => {
+                    return <NewContent key={data.index} current={data} deleteItem={deleteItem} itemKey={data.key}/>
                 })}
                 <div className="button-div">
                     <button className='post-btn' onClick={addText}>Add Text</button>

@@ -6,7 +6,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select'
-import Content from "./Content"
+import NewContent from "./NewContent"
+import { v4 as uuid } from 'uuid';
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
 export default function CreateArticle(){
@@ -42,64 +43,99 @@ export default function CreateArticle(){
             contentType: 'text',
             text: ''
         })
-        setContent(temp)
-        forceUpdate()
+        
+        console.log("Add")
+        console.log(temp)
+        setContent([...temp])
     }
 
     const deleteItem = (index) => {
         let temp = content 
-        if(temp[index].contentType == 'image'){
-            axios.delete('http://localhost:5007/' + 'file/' + temp[index].text)
-            .then(res => console.log("File Deleted"))
+        let arrIdx = temp.findIndex(data =>  data.index == index)
+
+        temp.splice(arrIdx, 1)
+        console.log("Delete")
+        setContent([...temp])
+        adjustIndexes(index, temp)
+    }
+
+    const adjustIndexes = (index, temp) => {
+        if(index != content.length-2){
+            for(let i = index; i < temp.length; i++){
+                temp[i].index = i
+            }
         }
-        temp.splice(index, 1)
-        setContent(temp)
-        forceUpdate()
+        console.log(temp)
+        setContent([...temp])
     }
 
     const addImage = async(e) => {
         let img = e.target.files[0]
 
-        const formData = new FormData()
-        formData.append(article._id + img.name, img)
+        let imgKey = uuid()
 
-        const config = {
-            headers: {
-                'content-type': 'multipart/form-data'
-            }
-        };
-
-        axios.post("http://localhost:5007/file",formData,config)
-            .then((response) => {
-                console.log("The file is successfully uploaded");
-            }).catch((error) => {
-                console.log(error)
-            }); 
-        
         let temp = content
         temp.push({
             index: content.length,
             contentType: 'image',
-            text: article._id + img.name
+            text: imgKey + img.name,
+            file: img,
+            key: imgKey
         })
 
-        let tempImages = images
-        tempImages.push(img)
+        let imgObj = {
+            file: img,
+            key: imgKey
+        }
 
-        setContent(temp)
-        setImages(tempImages)
-        forceUpdate()
+        let tempImages = images
+        tempImages.push(imgObj)
+
+        console.log(imgObj)
+        setContent([...temp])
+        setImages([...tempImages])
     }
 
     const post = async() => {
+        let temp = content
+        temp.forEach(data => {
+            if(data.contentType == 'image'){
+                data = {
+                    index: data.index,
+                    contentType: data.contentType,
+                    text: data.text
+                }
+            }
+        })
+
+        let postContent =  temp
+        console.log(postContent)
+
         let article = {
             title: title,
             author: author,
             level: level,
-            content: content
+            content: postContent
         }
 
-        console.log(article)
+        images.forEach(async(imgObj) => {
+            const formData = new FormData()
+            formData.append(imgObj.key + imgObj.file.name, imgObj.file)
+
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            };
+
+            await axios.post("http://localhost:5007/file",formData,config)
+                .then((response) => {
+                    console.log("The file is successfully uploaded");
+                }).catch((error) => {
+                    console.log(error)
+                }); 
+
+        })
 
         await axios.post('http://localhost:5007/' + 'articles', article, 
         {
@@ -157,11 +193,12 @@ export default function CreateArticle(){
                     </FormControl>
                 </header>
                 <main className='article-content'>
+                {console.log()}
                 {content.map(data => {
-                    return <Content key={data.index} dbContent={data} deleteItem={deleteItem}/>
+                    return <NewContent key={data.index} current={data} deleteItem={deleteItem}/>
                 })}
                 <div className="button-div">
-                    <button className='add-txt-btn' onClick={addText}>Add Text</button>
+                    <button className='add-txt-btn' onClick={addText}>Add Text Section</button>
                      <form onSubmit={addImage}>
                         <label className="image-upload">
                             <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addImage(e)}></input>
