@@ -437,6 +437,61 @@ input[type="file"] {
   border: 1px solid #ccc;
 }
 
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  margin: 2em 1em 2em 4.5em;
+}
+
+.add-thumbnail-div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  margin-right: 4em;
+  text-overflow: ellipsis;
+}
+
+.thumbnail-file {
+  background-color: #f5f4f6;
+  color:#9c9c9c;
+  max-width: 200px;
+  padding: 10px 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: 0 5px 5px 0;
+}
+
+.thumbnail-upload {
+  background-color: #e3e3e3;
+  border-radius: 5px 0 0 5px;
+  color: #1f1f28 ;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 11px 15px;
+  line-height: 75px;
+}
+
+.rich-editor {
+  padding: 10rem;
+ }
+
+.rich-editor .rdw-editor-main {
+  background-color: #fff;
+ }
+
+.rich-editor .DraftEditor-editorContainer {
+  
+ }
+
+.draft-editor-wrapper {
+  border: 1px solid #ccc;
+}
+
+.text-editor {
+  padding-left: 10px;
+}
+
 @media screen and (max-width: 798px) {
   .login-wrapper {
     background-color: #e3e3e3;

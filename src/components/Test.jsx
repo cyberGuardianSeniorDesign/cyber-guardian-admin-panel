@@ -7,9 +7,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import NewContent from "./NewContent"
-import { Editor } from 'react-draft-wysiwyg';
-import { EditorState } from "draft-js";
 
+import { EditorState } from "draft-js";
+import { Editor } from 'react-draft-wysiwyg';
+import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
@@ -170,15 +171,11 @@ export default function Test(){
             {!loading ?
             <div> 
             <Editor
+            wrapperClassName="rich-editor demo-wrapper"
+            editorClassName="text-editor"
             editorState={editorState}
-            wrapperClassName="wrapper-class"
-            editorClassName="editor-class"
-            toolbarClassName="toolbar-class"
-            toolbar={
-                {options: ['inline', 'blockType', 'fontSize']}
-              }
             onEditorStateChange={handleEditorStateChange}
-            
+            placeholder="Type paragraph..." 
             />
                 <header className="content-header">
                     <span className="content-info-span">

@@ -19,6 +19,9 @@ export default function EditArticle(){
     const [author, setAuthor] = React.useState('')
     const [level, setLevel] = React.useState('Apprentice')
     const [content, setContent] = React.useState([])
+    const [thumbnail, setThumbnail] = React.useState({})
+    const [ogThumbnail, setOgThumbnail] = React.useState('')
+    const [thumbnailName, setThumbnailName] = React.useState('Choose thumbnail file...')
     const [newContent, setNewContent] = React.useState([])
     const [images, setImages] = React.useState([])
 
@@ -48,12 +51,39 @@ export default function EditArticle(){
 
         let tempCurrent = content
         let final = tempCurrent.concat(tempNew)
-        console.log(final)
+        
+        let thumbnailKey = uuid()
+        let finalThumbnail = ''
+
+        //upload thumbnail to google bucket
+        if(thumbnailName !== 'Choose thumbnail file...' && ogThumbnail != thumbnailName){
+            finalThumbnail = thumbnailKey + thumbnail.name
+            const formData = new FormData()
+            formData.append(finalThumbnail, thumbnail)
+
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            };
+            
+            await axios.post("http://localhost:5007/file",formData,config)
+                    .then((response) => {
+                        console.log("The file is successfully uploaded");
+                    }).catch((error) => {
+                        console.log(error)
+                    }); 
+            
+        } else if(thumbnailName !== 'Choose thumbnail file...'){
+            finalThumbnail = ogThumbnail
+        }
+
         let updatedArticle = {
             title: title,
             author: author,
             level: level,
-            content: final
+            content: final,
+            thumbnail: finalThumbnail
         }
 
         await axios.patch('http://localhost:5007/' + 'articles/' + article._id, updatedArticle,)
@@ -137,6 +167,11 @@ export default function EditArticle(){
         setImages([...tempImages])
     }
 
+    const addThumbnail = (e) => {
+        setThumbnail(e.target.files[0])
+
+        setThumbnailName(e.target.files[0].name)
+    }
 
     React.useEffect(() => {
         const verifyToken = async() => {
@@ -156,6 +191,11 @@ export default function EditArticle(){
                 setTitle(state.article.title)
                 setAuthor(state.article.author)
                 setLevel(state.article.level)
+                //only et thumbnailName if article has thumbnail currently
+                if(state.article.thumbnail !== ''){
+                    setOgThumbnail(state.article.thumbnail)
+                    setThumbnailName(state.article.thumbnail)
+                }
                 window.localStorage.setItem('state', JSON.stringify(state.article))
             } else {
                 const data = window.localStorage.getItem('state')
@@ -183,28 +223,39 @@ export default function EditArticle(){
                 <header className="content-header">
                     <span className="content-info-span">
                         <h1 className='content-title'>Title: </h1>
-                        <TextField defaultValue={article.title} onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                        <TextField defaultValue={article.title} onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '50%', minWidth: '200px'}}/>
                     </span>
                     <span className="content-info-span">
                         <h2 className="content-author">By:</h2>
-                        <TextField defaultValue={article.author} onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                        <TextField defaultValue={article.author} onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '50%', minWidth: '200px'}}/>
                     </span>
-                    <FormControl sx={{ m: 1, minWidth: 100}}>
-                        <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
-                        <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={level}
-                        onChange={handleLevelChange}
-                        autoWidth
-                        label="Level"
-                        sx={{color: '#e3e3e3', '& .MuiInputBase-input':{border: '#e3e3e3'}}}
-                        >
-                            <MenuItem value={'Apprentice'}>Apprentice</MenuItem>
-                            <MenuItem value={'Novice'}>Novice</MenuItem>
-                            <MenuItem value={'Expert'}>Expert</MenuItem>
-                        </Select>
-                    </FormControl>
+                    <div className="header-row">
+                        <div className="add-thumbnail-div">
+                            <form onSubmit={addThumbnail}>
+                                <label className="thumbnail-upload">
+                                    <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addThumbnail(e)}></input>
+                                    Browse for Thumbnail
+                                </label>
+                            </form> 
+                            <p className="thumbnail-file">{thumbnailName}</p>
+                        </div>
+                        <FormControl sx={{ m: 1, minWidth: 100}}>
+                            <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
+                            <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={level}
+                            onChange={handleLevelChange}
+                            autoWidth
+                            label="Level"
+                            sx={{color: '#e3e3e3', '& .MuiInputBase-input':{border: '#e3e3e3'}}}
+                            >
+                                <MenuItem value={'Apprentice'}>Apprentice</MenuItem>
+                                <MenuItem value={'Novice'}>Novice</MenuItem>
+                                <MenuItem value={'Expert'}>Expert</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
                 </header>
                 <main className='article-content'>
                 {content.map(data => {

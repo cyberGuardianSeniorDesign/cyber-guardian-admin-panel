@@ -12,6 +12,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { v4 as uuid } from 'uuid';
 
 export default function EditGame(){
     const navigate = useNavigate()
@@ -21,6 +22,9 @@ export default function EditGame(){
     const [title, setTitle] = React.useState('')
     const [running, setRunning] = React.useState(true)
     const [desc, setDesc] = React.useState('')
+    const [thumbnail, setThumbnail] = React.useState({})
+    const [ogThumbnail, setOgThumbnail] = React.useState('')
+    const [thumbnailName, setThumbnailName] = React.useState('Choose thumbnail file...')
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
@@ -41,17 +45,58 @@ export default function EditGame(){
     }
 
     const patch = async() => {
+        let thumbnailKey = uuid()
+        let finalThumbnail = ''
+
+        //upload thumbnail to google bucket
+        if(thumbnailName !== 'Choose thumbnail file...' && ogThumbnail != thumbnailName){
+            finalThumbnail = thumbnailKey + thumbnail.name
+            const formData = new FormData()
+            formData.append(finalThumbnail, thumbnail)
+
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            };
+            
+            await axios.post("http://localhost:5007/file",formData,config)
+                    .then((response) => {
+                        console.log("The file is successfully uploaded");
+                    }).catch((error) => {
+                        console.log(error)
+                    }); 
+            
+            if(ogThumbnail != ''){
+                await axios.post("http://localhost:5007/file",formData,config)
+                .then((response) => {
+                    console.log("The file is successfully uploaded");
+                }).catch((error) => {
+                    console.log(error)
+                }); 
+            }
+            
+        } else if(thumbnailName !== 'Choose thumbnail file...'){
+            finalThumbnail = ogThumbnail
+        }
+
         let updatedGame = {
             title: title,
             description: desc,
-            running: running
+            running: running,
+            thumbnail: finalThumbnail
         }
-        console.log(updatedGame)
+        
         await axios.patch('http://localhost:5007/' + 'games/' + game._id, updatedGame,)
         .then(() => navigate('/games'))
         .catch(err => console.log(err))
     }
 
+    const addThumbnail = (e) => {
+        setThumbnail(e.target.files[0])
+
+        setThumbnailName(e.target.files[0].name)
+    }
 
     React.useEffect(() => {
         const verifyToken = async() => {
@@ -64,12 +109,16 @@ export default function EditGame(){
                 .then(data => data.isLoggedIn ? navigate('/checklists/edit/' + game._id):navigate('/login'))
         }
 
-        const loadChecklist = () => {
+        const loadGame = () => {
             if(state != undefined || null){
                 setGame(state.game)
                 setTitle(state.game.title)
                 setDesc(state.game.description)
                 setRunning(state.game.running)
+                setOgThumbnail(state.game.thumbnail)
+                if(state.game.thumbnail !== ''){
+                    setThumbnailName(state.game.thumbnail)
+                }
                 
                 window.localStorage.setItem('state', JSON.stringify(state.game))
             } else {
@@ -84,7 +133,7 @@ export default function EditGame(){
             }
         }
 
-        loadChecklist()
+        loadGame()
         setLoading(false)
     }, [])
 
@@ -105,16 +154,29 @@ export default function EditGame(){
                     <h2 className='content-title'>Description: </h2>
                     <TextField defaultValue={desc} placeholder="Learning path description..." onChange={handleDescriptionChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '65%'}}/>
                 </span>
-                <h2 className="content-title">Running State:</h2>
-                <FormControl>
-                    <RadioGroup
-                        value={running}
-                        onChange={handleRunningChange}
-                    >
-                        <FormControlLabel value="true" control={<Radio/>} label='True' sx={{color: 'white'}}/>
-                        <FormControlLabel value="false" control={<Radio/>} label='False' sx={{color: 'white'}}/>
-                    </RadioGroup>
-                </FormControl>
+                <div className="header-row">
+                    <div className="add-thumbnail-div">
+                        <form onSubmit={addThumbnail}>
+                            <label className="thumbnail-upload">
+                                <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addThumbnail(e)}></input>
+                                Browse for Thumbnail
+                            </label>
+                        </form> 
+                        <p className="thumbnail-file">{thumbnailName}</p>
+                    </div>
+                    <div className="running-state-div">
+                        <h2 className="content-title">Running State:</h2>
+                        <FormControl>
+                            <RadioGroup
+                                value={running}
+                                onChange={handleRunningChange}
+                            >
+                                <FormControlLabel value="true" control={<Radio/>} label='True' sx={{color: 'white'}}/>
+                                <FormControlLabel value="false" control={<Radio/>} label='False' sx={{color: 'white'}}/>
+                            </RadioGroup>
+                        </FormControl>
+                    </div>
+                </div>  
             <div className="button-div">
                 {/* <form onSubmit={addImage}>
                     <label className="image-upload">
