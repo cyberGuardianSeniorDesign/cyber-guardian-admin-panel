@@ -33,10 +33,14 @@ export default function EditLearningPath(){
     const [level, setLevel] = React.useState('Apprentice')
     const [desc, setDesc] = React.useState('')
     const [content, setContent] = React.useState([])
+    const [newContent, setNewContent] = React.useState([])
     const [openModal, setOpenModal] = React.useState(false)
     const [openTypeModal, setOpenTypeModal] = React.useState(false)
     const [typeRadio, setTypeRadio] = React.useState('article')
     const [radioValue, setRadioValue] = React.useState({})
+    const [thumbnail, setThumbnail] = React.useState({})
+    const [ogThumbnail, setOgThumbnail] = React.useState('')
+    const [thumbnailName, setThumbnailName] = React.useState('Choose thumbnail file...')
     const [, updateState] = React.useState()
     const forceUpdate = React.useCallback(() => updateState({}), [])
 
@@ -81,43 +85,50 @@ export default function EditLearningPath(){
             data = articles.find(article => article._id == radioValue)
         } else if(typeRadio == 'checklist')
         {
-            console.log('hit')
             data = checklists.find(checklist => checklist._id == radioValue)
-            console.log(data)
         } else if(typeRadio == 'game')
         {
             data = games.find(game => game._id == radioValue)
         }
 
-        let newContent = {
-            index: temp.length,
+        let key = uuid()
+
+        let newData = {
+            index: key,
             contentType: typeRadio,
             title: data.title,
             description: '',
-            link: 'cyberguardian.info/' + typeRadio + 's/' + data._id
+            link: 'https://www.cyberguardian.info/' + typeRadio + 's/' + data._id,
+            new: true
         }
 
-        temp.push(newContent)
-        forceUpdate()
+        temp.push(newData)
+        setNewContent([...temp])
         handleClose()
     }
 
-    const handleContentDescChange = (event, index) => {
-        let temp = content
-        temp[index].description = event.target.value
-        setContent(temp)
-        forceUpdate()
+    const handleContentDescChange = (event, item) => {
+        let temp
+        let arrIdx
+        if(item.new){
+            temp = newContent
+            arrIdx = newContent.findIndex(data => data.index == item.index)
+            newContent[arrIdx].description = event.target.value 
+            setNewContent([...temp])
+        } else {
+            temp = content
+            arrIdx = content.findIndex(data => data.index == item.index)
+            content[arrIdx].description = event.target.value
+            setContent([...temp])
+        }
     }
 
     const deleteItem = (index) => {
         let temp = content 
-        temp.splice(index, 1)
-        for(let i = index; i < temp.length; i++){
-            temp[i].index = i 
-        }
-         console.log(temp)
-        setContent(temp)
-        forceUpdate()
+        let idx = temp.findIndex(item => item.index == index)
+        temp.splice(idx, 1)
+        
+        setContent([...temp])
     }
 
     const addImage = async(e) => {
@@ -346,19 +357,13 @@ export default function EditLearningPath(){
                         </IconButton>
                         </Tooltip>
                         <h3 className='content-title-h3'>{data.contentType}: {data.title}</h3>
-                        <TextField rows={10} multiline placeholder="Content Description..." value={data.description} onChange={e => handleContentDescChange(e, data.index)} sx={{width: '90%'}} />
-                        <h3 className='content-title-h3'>Link: <a className='content-link' href={data.link}>{data.link}</a></h3> 
+                        <TextField rows={10} multiline placeholder="Content Description..." value={data.description} onChange={e => handleContentDescChange(e, data)} sx={{width: '90%'}} />
+                        <h3 className='content-title-h3'>Link: <a className='content-link' href={data.link}>Content link, click here!</a></h3> 
                         
                     </div>
                 })}
                 <div className="button-div">
                     <button className='add-txt-btn' onClick={pickContent}>Add Content</button>
-                    {/* <form onSubmit={addImage}>
-                        <label className="image-upload">
-                            <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addImage(e)}></input>
-                            Add Image
-                        </label>
-                    </form> */}
                     <button className='post-btn' onClick={patch}>Update</button>
                 </div>
                 </main>:  <p className='no-data-text'>Add an article/checklist/game to your learning path to get started.</p>}

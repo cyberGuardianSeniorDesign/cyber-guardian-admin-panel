@@ -19,6 +19,9 @@ export default function CreateChecklist(){
     const [author, setAuthor] = React.useState('')
     const [level, setLevel] = React.useState('Apprentice')
     const [listItems, setListItems] = React.useState([{index: 0, contentType: 'text', text: ''}])
+    const [images, setImages] = React.useState([])
+    const [thumbnail, setThumbnail] = React.useState({})
+    const [thumbnailName, setThumbnailName] = React.useState('Choose thumbnail file...')
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
@@ -77,12 +80,57 @@ export default function CreateChecklist(){
         forceUpdate()
     }
 
+    const addThumbnail = (e) => {
+        setThumbnail(e.target.files[0])
+
+        setThumbnailName(e.target.files[0].name)
+    }
+
     const post = async() => {
+        let temp = listItems
+        temp.forEach(data => {
+            if(data.contentType == 'image'){
+                data = {
+                    index: data.index,
+                    contentType: data.contentType,
+                    text: data.text
+                }
+            }
+        })
+
+        let postContent =  temp
+
+        let thumbnailKey = uuid()
+        let finalThumbnail = ''
+
+        //upload thumbnail to google bucket
+        if(thumbnailName !== 'Choose thumbnail file...'){
+            finalThumbnail = thumbnailKey + thumbnail.name
+            const formData = new FormData()
+            formData.append(finalThumbnail, thumbnail)
+
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            };
+
+            await axios.post("http://localhost:5007/file",formData,config)
+                    .then((response) => {
+                        console.log("The file is successfully uploaded");
+                    }).catch((error) => {
+                        console.log(error)
+                    }); 
+            
+        }
+        
         let checklist = {
             title: title,
             author: author,
             level: level,
-            content: listItems
+            description: desc,
+            content: postContent,
+            thumbnail: finalThumbnail
         }
 
         console.log(checklist)
@@ -119,28 +167,43 @@ export default function CreateChecklist(){
                 <header className="content-header">
                     <span className="content-info-span">
                         <h1 className='content-title'>Title: </h1>
-                        <TextField placeholder="Super Interesting Title" onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                        <TextField placeholder="Super Interesting Title" onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '50%', minWidth: '200px'}}/>
                     </span>
                     <span className="content-info-span">
-                        <h2 className="content-author">By:</h2>
-                        <TextField placeholder="Author" onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                        <h1 className="content-author">By:</h1>
+                        <TextField placeholder="Author" onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '50%', minWidth: '200px'}}/>
                     </span>
-                    <FormControl sx={{ m: 1, minWidth: 100}}>
-                        <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
-                        <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={level}
-                        onChange={handleLevelChange}
-                        autoWidth
-                        label="Level"
-                        sx={{color: '#e3e3e3', '& .MuiInputBase-input':{border: '#e3e3e3'}}}
-                        >
-                            <MenuItem value={'Apprentice'}>Apprentice</MenuItem>
-                            <MenuItem value={'Novice'}>Novice</MenuItem>
-                            <MenuItem value={'Expert'}>Expert</MenuItem>
-                        </Select>
-                    </FormControl>
+                    <div className="header-row">
+                        <div className="add-thumbnail-div">
+                            <form onSubmit={addThumbnail}>
+                                <label className="thumbnail-upload">
+                                    <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addThumbnail(e)}></input>
+                                    Browse for Thumbnail
+                                </label>
+                            </form> 
+                            <p className="thumbnail-file">{thumbnailName}</p>
+                        </div>
+                        <FormControl sx={{ m: "2em 0", minWidth: 100}}>
+                            <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
+                            <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={level}
+                            onChange={handleLevelChange}
+                            autoWidth
+                            label="Level"
+                            sx={{color: '#e3e3e3', '& .MuiInputBase-input':{border: '#e3e3e3'}}}
+                            >
+                                <MenuItem value={'Apprentice'}>Apprentice</MenuItem>
+                                <MenuItem value={'Novice'}>Novice</MenuItem>
+                                <MenuItem value={'Expert'}>Expert</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <span className="content-info-span">
+                        <h2 className='content-title'>Description: </h2>
+                        <TextField placeholder="Checklist description..." onChange={handleDescriptionChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '65%'}}/>
+                    </span>
                 </header>
                 <main className='checklist-content'>
                 {listItems.map(data => {

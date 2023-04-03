@@ -17,7 +17,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper'
+import { v4 as uuid } from 'uuid';
 export default function CreateLearningPath(){
     const navigate = useNavigate()
     const { state } = useLocation()
@@ -35,6 +35,8 @@ export default function CreateLearningPath(){
     const [openTypeModal, setOpenTypeModal] = React.useState(false)
     const [typeRadio, setTypeRadio] = React.useState('article')
     const [radioValue, setRadioValue] = React.useState({})
+    const [thumbnail, setThumbnail] = React.useState({})
+    const [thumbnailName, setThumbnailName] = React.useState('Choose thumbnail file...')
     const [, updateState] = React.useState()
     const forceUpdate = React.useCallback(() => updateState({}), [])
 
@@ -79,7 +81,6 @@ export default function CreateLearningPath(){
             data = articles.find(article => article._id == radioValue)
         } else if(typeRadio == 'checklist')
         {
-            console.log('hit')
             data = checklists.find(checklist => checklist._id == radioValue)
             console.log(data)
         } else if(typeRadio == 'game')
@@ -87,46 +88,41 @@ export default function CreateLearningPath(){
             data = games.find(game => game._id == radioValue)
         }
 
+        let key = uuid()
         let newContent = {
-            index: temp.length,
+            index: key,
             contentType: typeRadio,
             title: data.title,
             description: '',
-            link: 'cyberguardian.info/' + typeRadio + 's/' + data._id
+            link: 'https://www.cyberguardian.info/' + typeRadio + 's/' + data._id
         }
 
         temp.push(newContent)
-        forceUpdate()
+       
+        setContent([...temp])
         handleClose()
     }
 
     const handleContentDescChange = (event, index) => {
         let temp = content
-        temp[index].description = event.target.value
+        let arrIdx = temp.findIndex(data => data.index = index)
+
+        temp[arrIdx].description = event.target.value
         setContent(temp)
         forceUpdate()
     }
 
     const deleteItem = (index) => {
         let temp = content 
-        temp.splice(index, 1)
-        for(let i = index; i < temp.length; i++){
-            temp[i].index = i 
-        }
-         console.log(temp)
-        setContent(temp)
-        forceUpdate()
+        let arrIdx = temp.findIndex(data => data.index = index)
+        temp.splice(arrIdx, 1)
+        setContent([...temp])
     }
 
-    const addImage = async(e) => {
-        let temp = content
-        temp.push({
-            index: content.length,
-            contentType: 'image',
-            fileName: e.target.files[0].fileName
-        })
-        setContent(temp)
-        forceUpdate()
+    const addThumbnail = (e) => {
+        setThumbnail(e.target.files[0])
+
+        setThumbnailName(e.target.files[0].name)
     }
 
     const handleTypeChange = (event) => {
@@ -184,7 +180,7 @@ export default function CreateLearningPath(){
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
-                    {console.log(checklists)}
+                    
                     {checklists.map(checklist => {
                         return <TableRow>
                             <TableCell><FormControlLabel key={checklist._id} value={checklist._id} control={<Radio/>} label={checklist.title} /></TableCell>
@@ -223,12 +219,38 @@ export default function CreateLearningPath(){
     }
 
     const post = async() => {
+
+        let thumbnailKey = uuid()
+        let finalThumbnail = ''
+
+        //upload thumbnail to google bucket
+        if(thumbnailName !== 'Choose thumbnail file...'){
+            finalThumbnail = thumbnailKey + thumbnail.name
+            const formData = new FormData()
+            formData.append(finalThumbnail, thumbnail)
+
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            };
+
+            await axios.post("http://localhost:5007/file",formData,config)
+                    .then((response) => {
+                        console.log("The file is successfully uploaded");
+                    }).catch((error) => {
+                        console.log(error)
+                    }); 
+            
+        }
+
         let learningPath = {
             title: title,
             author: author,
             level: level,
             description: desc,
-            content: content
+            content: content,
+            thumbnail: finalThumbnail
         }
 
         console.log(learningPath)
@@ -283,28 +305,39 @@ export default function CreateLearningPath(){
                 <header className="content-header">
                     <span className="content-info-span">
                         <h1 className='content-title'>Title: </h1>
-                        <TextField placeholder="Super Interesting Title" onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                        <TextField placeholder="Super Interesting Title" onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '50%', minWidth: '200px'}}/>
                     </span>
                     <span className="content-info-span">
                         <h2 className="content-author">By:</h2>
-                        <TextField placeholder="Author" onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                        <TextField placeholder="Author" onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '50%', minWidth: '200px'}}/>
                     </span>
-                    <FormControl sx={{ m: 1, minWidth: 100}}>
-                        <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
-                        <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={level}
-                        onChange={handleLevelChange}
-                        autoWidth
-                        label="Level"
-                        sx={{color: '#e3e3e3', '& .MuiInputBase-input':{border: '#e3e3e3'}}}
-                        >
-                            <MenuItem value={'Apprentice'}>Apprentice</MenuItem>
-                            <MenuItem value={'Novice'}>Novice</MenuItem>
-                            <MenuItem value={'Expert'}>Expert</MenuItem>
-                        </Select>
-                    </FormControl>
+                    <div className="header-row">
+                        <div className="add-thumbnail-div">
+                            <form onSubmit={addThumbnail}>
+                                <label className="thumbnail-upload">
+                                    <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addThumbnail(e)}></input>
+                                    Browse for Thumbnail
+                                </label>
+                            </form> 
+                            <p className="thumbnail-file">{thumbnailName}</p>
+                        </div>
+                        <FormControl sx={{ m: 1, minWidth: 100}}>
+                            <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
+                            <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={level}
+                            onChange={handleLevelChange}
+                            autoWidth
+                            label="Level"
+                            sx={{color: '#e3e3e3', '& .MuiInputBase-input':{border: '#e3e3e3'}}}
+                            >
+                                <MenuItem value={'Apprentice'}>Apprentice</MenuItem>
+                                <MenuItem value={'Novice'}>Novice</MenuItem>
+                                <MenuItem value={'Expert'}>Expert</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
                     <span className="content-info-span">
                         <h2 className='content-title'>Description: </h2>
                         <TextField placeholder="Learning path description..." onChange={handleDescriptionChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '65%'}}/>
@@ -321,7 +354,7 @@ export default function CreateLearningPath(){
                         </Tooltip>
                         <h3 className='content-title-h3'>{data.contentType}: {data.title}</h3>
                         <TextField rows={10} multiline placeholder="Content Description..." value={data.description} onChange={e => handleContentDescChange(e, data.index)} sx={{width: '90%'}} />
-                        <h3 className='content-title-h3'>Link: <a className='content-link' href={data.link}>{data.link}</a></h3> 
+                        <h3 className='content-title-h3'>Link: <a className='content-link' target="_blank" href={data.link}>{data.link}</a></h3> 
                         
                     </div>
                 })}

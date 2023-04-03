@@ -337,6 +337,135 @@ input[type="file"] {
   margin: auto 1em;
   padding: 10px 15px;
 }
+
+/* VIEW PAGES */
+
+.view-page {
+  width:100vw;
+  height: fit-content;
+  background-color: #ffffff;
+  padding: 1em;
+  position:absolute;
+  top:0px;
+  right:0px;
+  bottom:0px;
+  left:0px;
+}
+
+.view-page-title {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.view-page-description {
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: large;
+}
+
+.view-page-text {
+  text-align: left;
+  margin-top: .5em, 1em;
+  padding: 1em;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: large;
+  line-height: 35px;
+}
+
+.view-page-img {
+  margin: 0 auto;
+  padding: 1em;
+  width: 60vw;
+  min-width: 300px;
+}
+
+.view-page-img-div {
+  margin: 2em auto;
+  text-align: center;
+}
+
+.view-page-img-h4 {
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: medium;
+  margin-top: .5em;
+}
+
+.view-page-h2 {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  margin-top: .5em;
+  padding-left: .5em;
+  text-align: left;
+}
+
+.wrapper-class {
+  padding: 1rem;
+  border: 1px solid #ccc;
+}
+
+.editor-class {
+  background-color:white;
+  padding: 1rem;
+  border: 1px solid #ccc;
+}
+
+.toolbar-class {
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  margin: 2em 1em 2em 4.5em;
+}
+
+.add-thumbnail-div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  margin-right: 4em;
+  text-overflow: ellipsis;
+}
+
+.thumbnail-file {
+  background-color: #f5f4f6;
+  color:#9c9c9c;
+  max-width: 200px;
+  padding: 10px 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: 0 5px 5px 0;
+}
+
+.thumbnail-upload {
+  background-color: #e3e3e3;
+  border-radius: 5px 0 0 5px;
+  color: #1f1f28 ;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 11px 15px;
+  line-height: 75px;
+}
+
+.rich-editor {
+  padding: 10rem;
+ }
+
+.rich-editor .rdw-editor-main {
+  background-color: #fff;
+ }
+
+.rich-editor .DraftEditor-editorContainer {
+  
+ }
+
+.draft-editor-wrapper {
+  border: 1px solid #ccc;
+}
+
+.text-editor {
+  padding-left: 10px;
+}
+
 @media screen and (max-width: 798px) {
   .login-wrapper {
     background-color: #e3e3e3;
