@@ -22,7 +22,7 @@ jobs:
             echo 'Deleted old folder'
             # git clone backend:cyberGuardianSeniorDesign@cyber-guardian-admin-panel.git
             git clone https://github.com/cyberGuardianSeniorDesign/cyber-guardian-admin-panel.git
-            # rm -r ~/server/*
-            # mv -t ~/server/ ~/test/cyber-guardian-admin-panel/*
-            # echo 'Moved to correct folder'
+            rm -r ~/client/*
+            mv -t ~/client/ ~/test/cyber-guardian-admin-panel/*
+            echo 'Moved to correct folder'
             echo 'Successful deployment to Digital Ocean'
