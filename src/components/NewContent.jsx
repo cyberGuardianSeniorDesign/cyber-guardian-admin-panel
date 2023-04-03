@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { TextField, Typography } from "@mui/material"
 import { alpha, styled } from '@mui/material/styles';
 import axios from "axios";
-
+import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
+import { Editor } from 'react-draft-wysiwyg';
+import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 export default function NewContent({current, deleteItem, itemKey}) {
     const [index, setIndex] = React.useState(current.index)
@@ -12,7 +14,7 @@ export default function NewContent({current, deleteItem, itemKey}) {
 
     //for text section
     const [header, setHeader] = React.useState(current.header || '')
-
+    const [editorState, setEditorState] = React.useState(() => EditorState.createEmpty())
     //for images
     const [link, setLink] = React.useState('') 
     const [caption, setCaption] = React.useState(current.caption || '')
@@ -22,11 +24,19 @@ export default function NewContent({current, deleteItem, itemKey}) {
         deleteItem(content)
     }
 
-    const updateContent = e =>
+    const updateContent = editorData =>
     {
+        
         let temp = content
-        temp.text = e.target.value
+        temp.raw = JSON.stringify(convertToRaw(editorData.getCurrentContent()))
+        console.log(temp.raw)
         setContent(temp)
+    }
+
+    const onChange = (editorState) => {
+        setEditorState(editorState)
+
+        updateContent(editorState)
     }
 
     const updateCaption = e => {
@@ -69,8 +79,13 @@ export default function NewContent({current, deleteItem, itemKey}) {
         <div className="content">
             {content.contentType == "text" ?
             <div className="text-div">
-            <TextField onChange={updateHeader} placeholder='Header (Optional)' defaultValue={content.header} multiline sx={{width: '80vw', margin: '1em .5em'}}/>
-            <TextField onChange={updateContent} defaultValue={content.text} rows={10} multiline sx={{width: '80vw'}}/>
+                <Editor
+                wrapperClassName="rich-editor demo-wrapper"
+                editorClassName="text-editor"
+                editorState={editorState}
+                onEditorStateChange={onChange}
+                placeholder="Type paragraph..." 
+                />
             <button className='content-delete-btn' onClick={deleteContent}>Delete</button>
             </div>:
             <div className='image-content-div'>

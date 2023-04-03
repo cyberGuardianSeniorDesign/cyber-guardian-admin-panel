@@ -2,6 +2,13 @@
   text-align: center;
 }
 
+.loading-div {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  margin: 0 auto;
+}
+
 .modal {
   background-color: #e3e3e3;
   border-radius: 15px;
@@ -9,7 +16,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 50%;
+  width: 40%;
   margin: 10em auto;
   min-width: 200px;
   padding: 1em 2em;
@@ -370,6 +377,7 @@ input[type="file"] {
   width:100vw;
   height: fit-content;
   background-color: #ffffff;
+  overflow-x: hidden;
   padding: 1em;
   position:absolute;
   top:0px;
@@ -385,6 +393,7 @@ input[type="file"] {
 .view-page-description {
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   font-size: large;
+  margin-right: 4em;
 }
 
 .view-page-text {
@@ -474,14 +483,19 @@ input[type="file"] {
 
 .rich-editor {
   padding: 10rem;
+  width: 100%;
+  height: 80%;
  }
 
 .rich-editor .rdw-editor-main {
   background-color: #fff;
+  width: 100%;
+  height: 80%;
  }
 
 .rich-editor .DraftEditor-editorContainer {
-  
+  width: 100%;
+  height: 80%;
  }
 
 .draft-editor-wrapper {
@@ -490,6 +504,19 @@ input[type="file"] {
 
 .text-editor {
   padding-left: 10px;
+  width: 100%;
+  height: 80%;
+}
+
+.article-text-content {
+  padding: 15px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin:0 2em 1em 2em;
+  overflow-x: hidden;
+}
+
+strong {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 @media screen and (max-width: 798px) {

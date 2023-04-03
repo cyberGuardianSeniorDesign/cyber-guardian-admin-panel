@@ -3,8 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { TextField, Typography } from "@mui/material"
 import { alpha, styled } from '@mui/material/styles';
 import axios from "axios";
+import { EditorState, convertToRaw, convertFromRaw, ContentState  } from "draft-js";
+import { Editor } from 'react-draft-wysiwyg';
+import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { editableInputTypes } from "@testing-library/user-event/dist/utils";
+import convertFromRawToDraftState from "draft-js/lib/convertFromRawToDraftState";
 
-
+const content = {"entityMap":{},"blocks":[{"key":"637gr","text":"Initialized from content state.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}]};
 export default function Content({dbContent, deleteItem, itemKey}) {
     const [index, setIndex] = React.useState(dbContent.index)
     const [content, setContent] = React.useState(dbContent)
@@ -12,6 +17,7 @@ export default function Content({dbContent, deleteItem, itemKey}) {
 
     //for text section
     const [header, setHeader] = React.useState(dbContent.header || '')
+    const [editorState, setEditorState] = React.useState()
 
     //for images
     const [link, setLink] = React.useState('') 
@@ -22,11 +28,18 @@ export default function Content({dbContent, deleteItem, itemKey}) {
         deleteItem(content)
     }
 
-    const updateContent = e =>
+    const updateContent = editorData =>
     {
         let temp = content
-        temp.text = e.target.value
+        temp.raw = JSON.stringify(convertToRaw(editorData.getCurrentContent()))
         setContent(temp)
+    }
+
+    const onChange = (editorState) => {
+        setEditorState(editorState)
+
+
+        updateContent(editorState)
     }
 
     const updateCaption = e => {
@@ -45,7 +58,7 @@ export default function Content({dbContent, deleteItem, itemKey}) {
         const loadContent = async() => {
 
             if(content == undefined || null){
-                setTimeout(loadContent, 500)
+                setTimeout(loadContent, 3000)
             } else if(content.contentType == 'image') {
                 await axios.get('http://localhost:5007/' + 'file/' + dbContent.text)
                 .then(res => {
@@ -58,11 +71,14 @@ export default function Content({dbContent, deleteItem, itemKey}) {
 
                 )
                 //setBase64(baseStr)
-                
+                 
+            } else if(content.contentType == 'text')
+            {
+                setEditorState(EditorState.createWithContent(convertFromRaw(JSON.parse(dbContent.raw))))
             }
-            else{
+            
                 setLoading(false)
-            }
+            
         }
        
         loadContent()
@@ -71,10 +87,16 @@ export default function Content({dbContent, deleteItem, itemKey}) {
     return <div className="content">
         {!loading ?
         <div className="content">
+            {console.log(dbContent)}
             {content.contentType == "text" ?
             <div className="text-div">
-            <TextField onChange={updateHeader} placeholder='Header (Optional)' defaultValue={content.header} multiline sx={{width: '80vw', margin: '1em .5em'}}/>
-            <TextField onChange={updateContent} defaultValue={content.text} rows={10} multiline sx={{width: '80vw'}}/>
+            <Editor
+                wrapperClassName="rich-editor demo-wrapper"
+                editorClassName="text-editor"
+                editorState={editorState}
+                onEditorStateChange={onChange}
+                placeholder="Type paragraph..." 
+            />
             <button className='content-delete-btn' onClick={deleteContent}>Delete</button>
             </div>:
             <div className='image-content-div'>

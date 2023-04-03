@@ -236,7 +236,7 @@ export default function EditChecklist(){
                 setAuthor(state.checklist.author)
                 setLevel(state.checklist.level)
                 setOgThumbnail(state.checklist.thumbnail)
-                if(state.game.thumbnail !== ''){
+                if(state.checklist.thumbnail !== ''){
                     setThumbnailName(state.game.thumbnail)
                 }
                 window.localStorage.setItem('state', JSON.stringify(state.checklist))
