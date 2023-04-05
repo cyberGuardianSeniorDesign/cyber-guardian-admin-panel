@@ -1,6 +1,10 @@
 name: Build and Deploy to Admin
 
-on: [push]
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ] 
   
 
 jobs:
@@ -26,3 +30,6 @@ jobs:
             mv -t ~/client/ ~/test/cyber-guardian-admin-panel/*
             echo 'Moved to correct folder'
             echo 'Successful deployment to Digital Ocean'
+            cd ~/client
+            npm install --production
+            echo 'Successfully installed node modules'
