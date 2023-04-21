@@ -94,8 +94,9 @@ export default function CreateLearningPath(){
             contentType: typeRadio,
             title: data.title,
             img: data.thumbnail,
+            data: data,
             description: '',
-            link: 'https://www.cyberguardian.info/' + typeRadio + 's/' + data._id
+            link: data._id
         }
 
         temp.push(newContent)
