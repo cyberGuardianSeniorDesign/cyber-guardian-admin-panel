@@ -63,7 +63,7 @@ export default function CreateGame(){
                 }
             };
 
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                     .then((response) => {
                         console.log("The file is successfully uploaded");
                     }).catch(() => {
@@ -79,7 +79,7 @@ export default function CreateGame(){
             thumbnail: finalThumbnail
         }
 
-        await axios.post('http://localhost:5007/' + 'games', game, 
+        await axios.post(process.env.REACT_APP_BACKEND + 'games', game, 
         {
             headers: {
                 "x-access-token": localStorage.getItem("token")
@@ -91,7 +91,7 @@ export default function CreateGame(){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-                fetch("http://localhost:5007/isAdminAuth", {
+                fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
                 headers: {
                     "x-access-token": localStorage.getItem("token")
                 }

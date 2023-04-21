@@ -67,7 +67,7 @@ export default function EditArticle(){
                 }
             };
             
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                     .then((response) => {
                         console.log("The file is successfully uploaded");
                     }).catch((error) => {
@@ -86,7 +86,7 @@ export default function EditArticle(){
             thumbnail: finalThumbnail
         }
 
-        await axios.patch('http://localhost:5007/' + 'articles/' + article._id, updatedArticle,)
+        await axios.patch(process.env.REACT_APP_BACKEND + 'articles/' + article._id, updatedArticle,)
         .then(() => navigate('/articles'))
         .catch(err => console.log(err))
 
@@ -100,7 +100,7 @@ export default function EditArticle(){
                 }
             };
 
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                 .then((response) => {
                     console.log("The file is successfully uploaded");
                 }).catch((error) => {
@@ -133,7 +133,7 @@ export default function EditArticle(){
         }
 
         if(item.contentType == 'image' && content.find(content => content.index == item.index)){
-            axios.delete('http://localhost:5007/' + 'file/' + item.text)
+            axios.delete(process.env.REACT_APP_BACKEND + 'file/' + item.text)
             .then(res => console.log("File Deleted"))
         }
 

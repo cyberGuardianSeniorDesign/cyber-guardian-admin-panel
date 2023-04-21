@@ -50,8 +50,8 @@ export default function Articles(){
     }
 
     const deleteArticle = async(id) => {
-        console.log('http://localhost:5007/' + 'articles/' + id)
-        await axios.delete('http://localhost:5007/' + 'articles/' + id)
+        console.log(process.env.REACT_APP_BACKEND + 'articles/' + id)
+        await axios.delete(process.env.REACT_APP_BACKEND + 'articles/' + id)
         .then(() => console.log("Article Deleted"))
         
         let temp = articles
@@ -68,7 +68,7 @@ export default function Articles(){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-            fetch('http://localhost:5007/' + "isAdminAuth", {
+            fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
               headers: {
                 "x-access-token": localStorage.getItem("token")
               }
@@ -78,7 +78,7 @@ export default function Articles(){
         }
 
         const fetchArticles = async() => {
-            await fetch('http://localhost:5007/' + 'articles')
+            await fetch(process.env.REACT_APP_BACKEND + 'articles')
             .then(res => res.json())
             .then(articles => setArticles(articles))
         }

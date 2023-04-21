@@ -138,7 +138,7 @@ export default function CreateChecklist(){
                 }
             };
 
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                     .then((response) => {
                         console.log("The file is successfully uploaded");
                     }).catch((error) => {
@@ -168,7 +168,7 @@ export default function CreateChecklist(){
                 }
             };
 
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                 .then((response) => {
                     console.log("The file is successfully uploaded");
                 }).catch((error) => {
@@ -178,7 +178,7 @@ export default function CreateChecklist(){
         })
 
 
-        await axios.post('http://localhost:5007/' + 'checklists', checklist, 
+        await axios.post(process.env.REACT_APP_BACKEND + 'checklists', checklist, 
         {
             headers: {
                 "x-access-token": localStorage.getItem("token")
@@ -190,7 +190,7 @@ export default function CreateChecklist(){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-                fetch("http://localhost:5007/isAdminAuth", {
+                fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
                 headers: {
                     "x-access-token": localStorage.getItem("token")
                 }

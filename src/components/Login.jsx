@@ -26,7 +26,7 @@ export default function Login() {
       password: password
     }
 
-    fetch('http://localhost:5007/login', {
+    fetch(process.env.REACT_APP_BACKEND + 'login', {
       method: "POST",
       headers: {
         "Content-type": "application/json"
@@ -52,7 +52,7 @@ export default function Login() {
 
   useEffect(() => {
     const verifyToken = async() => {
-      fetch("http://localhost:5007/isAdminAuth", {
+      fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
         headers: {
           "x-access-token": localStorage.getItem("token")
         }

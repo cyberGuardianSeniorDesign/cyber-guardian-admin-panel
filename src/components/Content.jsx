@@ -60,7 +60,7 @@ export default function Content({dbContent, deleteItem, itemKey}) {
             if(content == undefined || null){
                 setTimeout(loadContent, 3000)
             } else if(content.contentType == 'image') {
-                await axios.get('http://localhost:5007/' + 'file/' + dbContent.text)
+                await axios.get(process.env.REACT_APP_BACKEND + 'file/' + dbContent.text)
                 .then(res => {
                     setLink("https://storage.googleapis.com/cyber-guardian-images/" + dbContent.text)
                     setLoading(false)

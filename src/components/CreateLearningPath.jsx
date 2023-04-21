@@ -93,6 +93,7 @@ export default function CreateLearningPath(){
             index: key,
             contentType: typeRadio,
             title: data.title,
+            img: data.thumbnail,
             description: '',
             link: 'https://www.cyberguardian.info/' + typeRadio + 's/' + data._id
         }
@@ -105,16 +106,15 @@ export default function CreateLearningPath(){
 
     const handleContentDescChange = (event, index) => {
         let temp = content
-        let arrIdx = temp.findIndex(data => data.index = index)
+        let arrIdx = temp.findIndex(data => data.index == index)
 
         temp[arrIdx].description = event.target.value
-        setContent(temp)
-        forceUpdate()
+        setContent([...temp])
     }
 
     const deleteItem = (index) => {
         let temp = content 
-        let arrIdx = temp.findIndex(data => data.index = index)
+        let arrIdx = temp.findIndex(data => data.index == index)
         temp.splice(arrIdx, 1)
         setContent([...temp])
     }
@@ -235,7 +235,7 @@ export default function CreateLearningPath(){
                 }
             };
 
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                     .then((response) => {
                         console.log("The file is successfully uploaded");
                     }).catch((error) => {
@@ -255,7 +255,7 @@ export default function CreateLearningPath(){
 
         console.log(learningPath)
 
-        await axios.post('http://localhost:5007/' + 'learning-paths', learningPath, 
+        await axios.post(process.env.REACT_APP_BACKEND + 'learning-paths', learningPath, 
         {
             headers: {
                 "x-access-token": localStorage.getItem("token")
@@ -267,7 +267,7 @@ export default function CreateLearningPath(){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-                fetch("http://localhost:5007/isAdminAuth", {
+                fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
                 headers: {
                     "x-access-token": localStorage.getItem("token")
                 }
@@ -277,7 +277,7 @@ export default function CreateLearningPath(){
         }
 
         const getContent = async() => {
-            let content = await axios.get('http://localhost:5007/' + 'content')
+            let content = await axios.get(process.env.REACT_APP_BACKEND + 'content')
             setData(content.data)
             setArticles(content.data.articles)
             setChecklists(content.data.checklists)

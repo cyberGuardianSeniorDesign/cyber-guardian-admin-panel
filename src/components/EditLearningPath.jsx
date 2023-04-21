@@ -45,6 +45,12 @@ export default function EditLearningPath(){
     const [, updateState] = React.useState()
     const forceUpdate = React.useCallback(() => updateState({}), [])
 
+    const addThumbnail = (e) => {
+        setThumbnail(e.target.files[0])
+
+        setThumbnailName(e.target.files[0].name)
+    }
+
     const handleTitleChange = e => {
         setTitle(e.target.value)
     }
@@ -227,17 +233,45 @@ export default function EditLearningPath(){
     }
 
     const patch = async() => {
+        
+
+
+        let thumbnailKey = uuid()
+        let finalThumbnail = ''
+
+        //upload thumbnail to google bucket
+        if(thumbnailName !== 'Choose thumbnail file...' && ogThumbnail != thumbnailName){
+            finalThumbnail = thumbnailKey + thumbnail.name
+            const formData = new FormData()
+            formData.append(finalThumbnail, thumbnail)
+
+            const config = {
+                headers: {
+                    'content-type': 'multipart/form-data'
+                }
+            };
+            
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
+                    .then((response) => {
+                        console.log("The file is successfully uploaded");
+                    }).catch((error) => {
+                        console.log(error)
+                    }); 
+            
+        } else if(thumbnailName !== 'Choose thumbnail file...'){
+            finalThumbnail = ogThumbnail
+        }
+
         let update = {
             title: title,
             author: author,
             level: level,
             description: desc,
-            content: content
+            content: content,
+            thumbnail, finalThumbnail
         }
 
-        console.log('http://localhost:5007/' + 'learning-paths/' + learningPath._id)
-
-        await axios.patch('http://localhost:5007/' + 'learning-paths/' + learningPath._id, update, 
+        await axios.patch(process.env.REACT_APP_BACKEND + 'learning-paths/' + learningPath._id, update, 
         {
             headers: {
                 "x-access-token": localStorage.getItem("token")
@@ -280,7 +314,7 @@ export default function EditLearningPath(){
         }
 
         const getContent = async() => {
-            let content = await axios.get('http://localhost:5007/' + 'content')
+            let content = await axios.get(process.env.REACT_APP_BACKEND + 'content')
             setData(content.data)
             setArticles(content.data.articles)
             setChecklists(content.data.checklists)

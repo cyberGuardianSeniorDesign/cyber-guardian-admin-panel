@@ -141,7 +141,7 @@ export default function Test(){
 
         })
 
-        await axios.post('http://localhost:5007/' + 'articles', article, 
+        await axios.post(process.env.REACT_APP_BACKEND + 'articles', article, 
         {
             headers: {
                 "x-access-token": localStorage.getItem("token")

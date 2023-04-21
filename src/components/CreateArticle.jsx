@@ -118,7 +118,7 @@ export default function CreateArticle(){
                 }
             };
 
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post( process.env.REACT_APP_BACKEND + "file",formData,config)
                     .then((response) => {
                         console.log("The file is successfully uploaded");
                     }).catch((error) => {
@@ -146,7 +146,7 @@ export default function CreateArticle(){
                 }
             };
 
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post( process.env.REACT_APP_BACKEND + "file",formData,config)
                 .then((response) => {
                     console.log("The file is successfully uploaded");
                 }).catch((error) => {
@@ -157,7 +157,7 @@ export default function CreateArticle(){
 
         
         //POST article object to backend
-        await axios.post('http://localhost:5007/' + 'articles', article, 
+        await axios.post(process.env.REACT_APP_BACKEND + 'articles', article, 
         {
             headers: {
                 "x-access-token": localStorage.getItem("token")
@@ -170,7 +170,7 @@ export default function CreateArticle(){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-                fetch("http://localhost:5007/isAdminAuth", {
+                fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
                 headers: {
                     "x-access-token": localStorage.getItem("token")
                 }

@@ -50,8 +50,8 @@ export default function LearningPaths(){
     }
 
     const deleteLearningPath = async(id) => {
-        console.log('http://localhost:5007/' + 'learning-paths/' + id)
-        await axios.delete('http://localhost:5007/' + 'learning-paths/' + id)
+        console.log(process.env.REACT_APP_BACKEND + 'learning-paths/' + id)
+        await axios.delete(process.env.REACT_APP_BACKEND + 'learning-paths/' + id)
         .then(() => console.log("LearningPath Deleted"))
         
         let temp = learningPaths
@@ -68,7 +68,7 @@ export default function LearningPaths(){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-            fetch('http://localhost:5007/' + "isAdminAuth", {
+            fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
               headers: {
                 "x-access-token": localStorage.getItem("token")
               }
@@ -78,7 +78,7 @@ export default function LearningPaths(){
         }
 
         const fetchLearningPaths = async() => {
-            await fetch('http://localhost:5007/' + 'learning-paths')
+            await fetch(process.env.REACT_APP_BACKEND + 'learning-paths')
             .then(res => res.json())
             .then(learningPaths => setLearningPaths(learningPaths))
         }

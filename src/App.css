@@ -1,5 +1,14 @@
 .App {
   text-align: center;
+  overflow-x: hidden;
+}
+
+:root {
+  overflow-x: hidden;
+}
+
+html {
+  overflow-x: hidden;
 }
 
 .loading-div {
@@ -112,7 +121,7 @@ input[type="file"] {
   flex-direction: column;
   background-color: #e3e3e3;
   margin: 1em;
-  padding: 2em 2em;
+  padding: .5em 2em;
 }
 
 .content-delete-btn {

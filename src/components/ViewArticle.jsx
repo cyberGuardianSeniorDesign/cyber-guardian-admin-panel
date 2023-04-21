@@ -4,6 +4,8 @@ import { Typography } from "@mui/material"
 import { useLocation, useNavigate } from "react-router-dom"
 import draftToHtml from 'draftjs-to-html';
 import { EditorState, convertToRaw, convertFromRaw, ContentState  } from "draft-js";
+import { Editor } from 'react-draft-wysiwyg';
+import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import ReactHtmlParser from 'react-html-parser'; 
 export default function ViewArticle({dbArticle})
 {
@@ -16,6 +18,7 @@ export default function ViewArticle({dbArticle})
     const [level, setLevel] = React.useState('Apprentice')
     const [content, setContent] = React.useState([])
     const [html, setHtml] = React.useState([])
+    const [editorState, setEditorState] = React.useState()
 
     const renderArticle = () => {
       
@@ -53,7 +56,21 @@ export default function ViewArticle({dbArticle})
           }
       }
 
+      const loadContentRaw = () => {
+        if (content.raw != undefined || null)
+        {
+          EditorState.createWithContent(convertFromRaw(JSON.parse(content.raw)))
+          setTimeout(() => setLoading(false), 500)
+          
+        } 
+        else 
+        {
+          setTimeout(loadArticle, 1000);
+        }
+      }
+
         loadArticle()
+        loadContentRaw()
         setLoading(false)
     }, [])
 
@@ -70,7 +87,6 @@ export default function ViewArticle({dbArticle})
           console.log(html)
           return <div className="article-text-content" key={content.index}>{ReactHtmlParser(html)}</div>
         } else {
-          console.log(content)
           return <div key={content.index} className="view-page-img-div">
             <h3 className="view-page-img-h3">{content.caption}</h3>
             <img className="view-page-img" src={"https://storage.googleapis.com/cyber-guardian-images/" + content.text} alt={content.caption}/>

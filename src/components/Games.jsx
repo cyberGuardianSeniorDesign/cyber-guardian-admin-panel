@@ -46,8 +46,8 @@ export default function Games(){
     }
 
     const deleteGame = async(id) => {
-        console.log('http://localhost:5007/' + 'games/' + id)
-        await axios.delete('http://localhost:5007/' + 'games/' + id)
+        console.log(process.env.REACT_APP_BACKEND + 'games/' + id)
+        await axios.delete(process.env.REACT_APP_BACKEND + 'games/' + id)
         .then(() => console.log("Games Deleted"))
         
         let temp = games
@@ -64,7 +64,7 @@ export default function Games(){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-            fetch('http://localhost:5007/' + "isAdminAuth", {
+            fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
               headers: {
                 "x-access-token": localStorage.getItem("token")
               }
@@ -74,7 +74,7 @@ export default function Games(){
         }
 
         const fetchGames = async() => {
-            await fetch('http://localhost:5007/' + 'games')
+            await fetch(process.env.REACT_APP_BACKEND + 'games')
             .then(res => res.json())
             .then(games => setGames(games))
         }

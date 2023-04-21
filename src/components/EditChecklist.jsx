@@ -92,7 +92,7 @@ export default function EditChecklist(){
         }
 
         if(item.contentType == 'image' && listItems.find(content => content.index == item.index)){
-            axios.delete('http://localhost:5007/' + 'file/' + item.text)
+            axios.delete(process.env.REACT_APP_BACKEND + 'file/' + item.text)
             .then(res => console.log("File Deleted"))
         } else if(item.contentType == 'image') {
             let tempImg = images.filter(imgObj => imgObj.key != temp.key)
@@ -172,7 +172,7 @@ export default function EditChecklist(){
                 }
             };
             
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                     .then((response) => {
                         console.log("The file is successfully uploaded");
                     }).catch((error) => {
@@ -201,7 +201,7 @@ export default function EditChecklist(){
                 }
             };
 
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                 .then((response) => {
                     console.log("The file is successfully uploaded");
                 }).catch((error) => {
@@ -211,7 +211,7 @@ export default function EditChecklist(){
         })
 
         console.log(updatedChecklist)
-        await axios.patch('http://localhost:5007/' + 'checklists/' + checklist._id, updatedChecklist,)
+        await axios.patch(process.env.REACT_APP_BACKEND + 'checklists/' + checklist._id, updatedChecklist,)
         .then(() => navigate('/checklists'))
         .catch(err => console.log(err))
     }

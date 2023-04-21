@@ -30,7 +30,7 @@ export default function Home(){
 
     React.useEffect(() => {
       const verifyToken = async() => {
-        fetch('http://localhost:5007/' + "isAdminAuth", {
+        fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
           headers: {
             "x-access-token": localStorage.getItem("token")
           }
@@ -39,7 +39,7 @@ export default function Home(){
         .then(data => data.isLoggedIn ? navigate('/'):navigate('/login'))
       }
       const getData = async() => {
-        await axios.get('http://localhost:5007/' + 'content')
+        await axios.get(process.env.REACT_APP_BACKEND + 'content')
         .then(res => setData(res.data))
         
         setArticles(data.articles)
@@ -47,7 +47,7 @@ export default function Home(){
         setLearningPaths(data.learningPaths)  
       }
   
-      fetch('http://localhost:5007/' + "isAdminAuth", {
+      fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
         headers: {
           "x-access-token": localStorage.getItem("token")
         }

@@ -56,8 +56,8 @@ export default function Checklists(){
     }
 
     const deleteChecklist = async(id) => {
-        console.log('http://localhost:5007/' + 'checklists/' + id)
-        await axios.delete('http://localhost:5007/' + 'checklists/' + id)
+        console.log(process.env.REACT_APP_BACKEND + 'checklists/' + id)
+        await axios.delete(process.env.REACT_APP_BACKEND + 'checklists/' + id)
         .then(() => console.log("Checklist Deleted"))
         .catch(err => {
             setFailMsg('Error: ' + err)
@@ -77,7 +77,7 @@ export default function Checklists(){
 
     React.useEffect(() => {
         const verifyToken = async() => {
-            fetch('http://localhost:5007/' + "isAdminAuth", {
+            fetch(process.env.REACT_APP_BACKEND + "isAdminAuth", {
               headers: {
                 "x-access-token": localStorage.getItem("token")
               }
@@ -87,7 +87,7 @@ export default function Checklists(){
         }
 
         const fetchChecklists = async() => {
-            await fetch('http://localhost:5007/' + 'checklists')
+            await fetch(process.env.REACT_APP_BACKEND + 'checklists')
             .then(res => res.json())
             .then(checklists => setChecklists(checklists))
         }

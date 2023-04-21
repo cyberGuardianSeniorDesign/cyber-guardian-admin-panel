@@ -60,7 +60,7 @@ export default function EditGame(){
                 }
             };
             
-            await axios.post("http://localhost:5007/file",formData,config)
+            await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                     .then((response) => {
                         console.log("The file is successfully uploaded");
                     }).catch((error) => {
@@ -68,7 +68,7 @@ export default function EditGame(){
                     }); 
             
             if(ogThumbnail != ''){
-                await axios.post("http://localhost:5007/file",formData,config)
+                await axios.post(process.env.REACT_APP_BACKEND + "file",formData,config)
                 .then((response) => {
                     console.log("The file is successfully uploaded");
                 }).catch((error) => {
@@ -87,7 +87,7 @@ export default function EditGame(){
             thumbnail: finalThumbnail
         }
         
-        await axios.patch('http://localhost:5007/' + 'games/' + game._id, updatedGame,)
+        await axios.patch(process.env.REACT_APP_BACKEND + 'games/' + game._id, updatedGame,)
         .then(() => navigate('/games'))
         .catch(err => console.log(err))
     }
