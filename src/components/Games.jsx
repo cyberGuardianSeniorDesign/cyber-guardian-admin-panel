@@ -17,6 +17,8 @@ import Paper from '@mui/material/Paper'
 import Modal from '@mui/material/Modal'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
+import { ArrowBack } from "@material-ui/icons";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function Games(){
     const navigate = useNavigate()
@@ -25,16 +27,14 @@ export default function Games(){
     const [openDeleteConfirmation, setOpenDeleteConfirmation] = React.useState(false)
     const [openSuccess, setOpenSuccess] = React.useState(false)
     const [successMsg, setSuccessMsg] = React.useState('')
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
     const [focusedSwitch, setFocusedSwitch] = React.useState('')
 
     const handleEditGame = (game) => {
         navigate('edit/' + game._id, {state: {game: game}})
     }
 
-    const handleCreateGame = () => {
-        navigate('create')
+    const goHome = () => {
+        navigate('/../')
     }
 
     const handleClose = () => {
@@ -45,22 +45,6 @@ export default function Games(){
         setOpenSuccess(false)
     }
 
-    const deleteGame = async(id) => {
-        console.log(process.env.REACT_APP_BACKEND + 'games/' + id)
-        await axios.delete(process.env.REACT_APP_BACKEND + 'games/' + id)
-        .then(() => console.log("Games Deleted"))
-        
-        let temp = games
-
-        for(let i = 0; i < temp.length; i++){
-            if(temp[i]._id == id){
-                temp.splice(i, 1)
-            }
-        }
-
-        setGames(temp)
-        forceUpdate()
-    }
 
     React.useEffect(() => {
         const verifyToken = async() => {
@@ -81,14 +65,16 @@ export default function Games(){
 
         verifyToken()
         fetchGames()
-        setLoading(false)
+        setTimeout(() => setLoading(false), 400)
     }, [])
 
     return(<main >
         {!loading ? 
         <div className='games-page'>
+            <IconButton onClick={goHome} sx={{color: 'white', display: 'absolute', right: '40%'}}>
+                <ArrowBack /> <Typography sx={{fontSize: '16px'}}>Go Back</Typography>
+            </IconButton>
             <h1 className="home-h1">GAMES</h1>
-            <button className='create-btn' onClick={handleCreateGame}>Add Game Switch</button>
             {games.length > 0 ?
             
             <TableContainer component={Paper} sx={{width: '80%', margin: '1em auto', minWidth: '600px'}}>
@@ -101,6 +87,7 @@ export default function Games(){
                         <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
+                <TableBody>
                 {games.map(game => {
                     return <TableRow key={game._id} className='game-card'>
                         <TableCell>{game.title}</TableCell>
@@ -112,49 +99,20 @@ export default function Games(){
                                     <EditIcon/>
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title='Delete'>
-                                <IconButton onClick={() => {
-                                    setFocusedSwitch(game._id)
-                                    setOpenDeleteConfirmation(true)
-                                }}>
-                                    <DeleteIcon/>
-                                </IconButton>
-                            </Tooltip>
+                           
                         </TableCell>
                     </TableRow>
                 })}
+                </TableBody>
                 </Table>
             </TableContainer>
             : <p className='no-data-text'>No Games in Database.</p>}
-            <Modal
-                open={openDeleteConfirmation}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                >
-                <div className="modal">
-                    <Typography id="modal-modal-title" variant="h6" component="h2" fontWeight="600">
-                     Delete Confirmation
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2, fontSize: '20px', margin: '1em 2em' }}>
-                    Are you sure you want to delete this game switch? (The game files will still be on the front end. They just won't be visible to the user.) 
-                    </Typography>
-                    <div>
-                        <button className="dark-btn" onClick={() => {
-                            deleteGame(focusedSwitch)
-                            setSuccessMsg("Game Switch was Deleted")
-                            setOpenSuccess(true)
-                            handleClose()
-                            }}>Yes</button>
-                        <button className="dark-btn" onClick={handleClose}>No</button>
-                    </div>
-                </div>
-            </Modal>
+            
             <Snackbar open={openSuccess} autoHideDuration={3000} onClose={handleCloseSuccess}>
                 <Alert onClose={handleCloseSuccess} severity="success" sx={{ width: '100%' }}>
                     {successMsg}
                 </Alert>
             </Snackbar>
-        </div>:<span>Loading...</span>}
+        </div>:<div className="loading-div"><CircularProgress color="inherit" sx={{position: 'relative', top: '40%', color: 'white'}}/></div>}
     </main>)
 }

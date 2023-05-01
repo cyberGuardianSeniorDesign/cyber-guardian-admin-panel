@@ -4,6 +4,7 @@ import axios from 'axios'
 import { Typography } from "@mui/material"
 import IconButton from '@mui/material/IconButton'
 import EditIcon from '@mui/icons-material/Edit'
+import { ArrowBack } from "@material-ui/icons";
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Tooltip from '@mui/material/Tooltip'
@@ -17,7 +18,8 @@ import Paper from '@mui/material/Paper'
 import Modal from '@mui/material/Modal'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
-import { v4 as uuid } from 'uuid';
+import CircularProgress from "@mui/material/CircularProgress";
+
 export default function Checklists(){
     const navigate = useNavigate()
     const [checklists, setChecklists] = React.useState([])
@@ -33,6 +35,10 @@ export default function Checklists(){
 
     const handleEditChecklist = (checklist) => {
         navigate('edit/' + checklist._id, {state: {checklist: checklist}})
+    }
+
+    const goHome = () => {
+        navigate('/../')
     }
 
     const handleViewChecklist = (checklist) => {
@@ -94,12 +100,15 @@ export default function Checklists(){
 
         verifyToken()
         fetchChecklists()
-        setLoading(false)
+        setTimeout(() => setLoading(false), 400)
     }, [])
 
     return(<main >
         {!loading ? 
         <div className='checklists-page'>
+            <IconButton onClick={goHome} sx={{color: 'white', display: 'absolute', right: '40%'}}>
+                <ArrowBack /> <Typography sx={{fontSize: '16px'}}>Go Back</Typography>
+            </IconButton>
             <h1 className="home-h1">CHECKLISTS</h1>
             <button className='create-btn' onClick={handleCreateChecklist}>Create New Checklist</button>
             {checklists.length > 0 ?
@@ -180,6 +189,6 @@ export default function Checklists(){
                     {failMsg}
                 </Alert>
             </Snackbar>
-        </div>:<span>Loading...</span>}
+        </div>:<div className="loading-div"><CircularProgress color="inherit" sx={{position: 'relative', top: '40%', color: 'white'}}/></div>}
     </main>)
 }

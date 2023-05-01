@@ -5,10 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select'
-import IconButton from '@mui/material/IconButton'
-import DeleteIcon from '@mui/icons-material/Delete'
-import Tooltip from '@mui/material/Tooltip'
+
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -25,12 +22,6 @@ export default function EditGame(){
     const [thumbnail, setThumbnail] = React.useState({})
     const [ogThumbnail, setOgThumbnail] = React.useState('')
     const [thumbnailName, setThumbnailName] = React.useState('Choose thumbnail file...')
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
-
-    const handleTitleChange = e => {
-        setTitle(e.target.value)
-    }
 
     const handleDescriptionChange = e => {
         setDesc(e.target.value)
@@ -147,8 +138,7 @@ export default function EditGame(){
             <main className='checklist-content'>
             
                 <span className="content-info-span">
-                    <h1 className='content-title'>Title: </h1>
-                    <TextField defaultValue={title} placeholder="Super Interesting Title" onChange={handleTitleChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
+                    <h1 className='content-title'>Title: {title} </h1>
                 </span>
                 <span className="content-info-span">
                     <h2 className='content-title'>Description: </h2>

@@ -88,27 +88,52 @@ export default function EditLearningPath(){
 
         let data = {}
 
+        let key = uuid()
+
+        let newData
+
         if(typeRadio == 'article'){
             data = articles.find(article => article._id == radioValue)
+            newData = {
+                index: key,
+                contentType: typeRadio,
+                title: data.title,
+                img: data.thumbnail,
+                data: data.data,
+                description: '',
+                link: data._id,
+                new: true
+            }
         } else if(typeRadio == 'checklist')
         {
             data = checklists.find(checklist => checklist._id == radioValue)
+            newData = {
+                index: key,
+                contentType: typeRadio,
+                title: data.title,
+                img: data.thumbnail,
+                data: data.data,
+                description: '',
+                link: data._id,
+                new: true
+            }
         } else if(typeRadio == 'game')
         {
             data = games.find(game => game._id == radioValue)
+            let gameLink = data.title.toLowerCase().replace(/\s+/g,"-")
+            newData = {
+                index: key,
+                contentType: typeRadio,
+                title: data.title,
+                img: data.thumbnail,
+                data: data.data,
+                description: '',
+                link: gameLink,
+                new: true
+            }
         }
 
-        let key = uuid()
-
-        let newData = {
-            index: key,
-            contentType: typeRadio,
-            title: data.title,
-            img: data.thumbnail,
-            description: '',
-            link: 'https://www.cyberguardian.info/' + typeRadio + 's/' + data._id,
-            new: true
-        }
+         
 
         temp.push(newData)
         setNewContent([...temp])
@@ -235,7 +260,7 @@ export default function EditLearningPath(){
     const patch = async() => {
         
 
-
+        console.log(ogThumbnail)
         let thumbnailKey = uuid()
         let finalThumbnail = ''
 
@@ -268,8 +293,10 @@ export default function EditLearningPath(){
             level: level,
             description: desc,
             content: content,
-            thumbnail, finalThumbnail
+            thumbnail: finalThumbnail
         }
+
+        console.log(update)
 
         await axios.patch(process.env.REACT_APP_BACKEND + 'learning-paths/' + learningPath._id, update, 
         {
@@ -300,6 +327,11 @@ export default function EditLearningPath(){
                 setAuthor(state.learningPath.author)
                 setLevel(state.learningPath.level)
                 setDesc(state.learningPath.description)
+                //only et thumbnailName if article has thumbnail currently
+                if(state.learningPath.thumbnail !== ''){
+                    setOgThumbnail(state.learningPath.thumbnail)
+                    setThumbnailName(state.learningPath.thumbnail)
+                }
                 window.localStorage.setItem('state', JSON.stringify(state.article))
             } else {
                 const data = window.localStorage.getItem('state')
@@ -319,6 +351,7 @@ export default function EditLearningPath(){
             setArticles(content.data.articles)
             setChecklists(content.data.checklists)
             setGames(content.data.games)
+            
         }
 
         const loadPage = () => {
@@ -351,6 +384,16 @@ export default function EditLearningPath(){
                         <h2 className="content-author">By:</h2>
                         <TextField defaultValue={author} placeholder="Author" onChange={handleAuthorChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px'}}/>
                     </span>
+                    <div className="header-row">
+                    <div className="add-thumbnail-div">
+                            <form onSubmit={addThumbnail}>
+                                <label className="thumbnail-upload">
+                                    <input type="file" id="add-image" name="img" accept="image/png, image/jpeg" onChange={e => addThumbnail(e)}></input>
+                                    Browse for Thumbnail
+                                </label>
+                            </form> 
+                            <p className="thumbnail-file">{thumbnailName}</p>
+                        </div>
                     <FormControl sx={{ m: 1, minWidth: 100}}>
                         <InputLabel id="demo-simple-select-label" sx={{color: '#e3e3e3' }}>Level</InputLabel>
                         <Select
@@ -367,6 +410,7 @@ export default function EditLearningPath(){
                             <MenuItem value={'Expert'}>Expert</MenuItem>
                         </Select>
                     </FormControl>
+                    </div>
                     <span className="content-info-span">
                         <h2 className='content-title'>Description: </h2>
                         <TextField placeholder="Learning path description..." defaultValue={desc} value={desc} onChange={handleDescriptionChange} sx={{backgroundColor: '#FFF2F2', borderRadius: '5px', width: '65%'}}/>
@@ -375,7 +419,7 @@ export default function EditLearningPath(){
 
             {content != [] ? <main className='learning-path-main'>
                 {content.map(data => {
-                    return <div className='learning-path-content-div'>
+                    return <div className='create-learning-path-content-div'>
                         <Tooltip>
                         <IconButton onClick={() => deleteItem(data.index)} sx={{position: 'relative', left: '-50%'}}>
                             <DeleteIcon sx={{color: '#1f1f28'}}/>
@@ -383,7 +427,6 @@ export default function EditLearningPath(){
                         </Tooltip>
                         <h3 className='content-title-h3'>{data.contentType}: {data.title}</h3>
                         <TextField rows={10} multiline placeholder="Content Description..." value={data.description} onChange={e => handleContentDescChange(e, data)} sx={{width: '90%'}} />
-                        <h3 className='content-title-h3'>Link: <a className='content-link' href={data.link}>Content link, click here!</a></h3> 
                         
                     </div>
                 })}

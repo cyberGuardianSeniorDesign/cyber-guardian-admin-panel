@@ -17,7 +17,8 @@ import Paper from '@mui/material/Paper'
 import Modal from '@mui/material/Modal'
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-
+import { ArrowBack } from "@material-ui/icons";
+import CircularProgress from "@mui/material/CircularProgress";
 export default function Articles(){
     const navigate = useNavigate()
     const [articles, setArticles] = React.useState([])
@@ -31,6 +32,10 @@ export default function Articles(){
 
     const handleEditArticle = (article) => {
         navigate('edit/' + article._id, {state: {article: article}})
+    }
+
+    const goHome = () => {
+        navigate('/../')
     }
 
     const handleViewArticle = (article) => {
@@ -85,12 +90,15 @@ export default function Articles(){
 
         verifyToken()
         fetchArticles()
-        setLoading(false)
+        setTimeout(() => setLoading(false), 500)
     }, [])
 
     return(<main >
         {!loading ? 
         <div className='articles-page'>
+            <IconButton onClick={goHome} sx={{color: 'white', display: 'absolute', right: '40%'}}>
+                <ArrowBack /> <Typography sx={{fontSize: '16px'}}>Go Back</Typography>
+            </IconButton>
             <h1 className="home-h1">ARTICLES</h1>
             <button className='create-btn' onClick={handleCreateArticle}>Create New Article</button>
             {articles.length > 0 ? 
@@ -166,6 +174,6 @@ export default function Articles(){
                     {successMsg}
                 </Alert>
             </Snackbar>
-        </div>:<span>Loading...</span>}
+        </div>:<div className="loading-div"><CircularProgress color="inherit" sx={{position: 'relative', top: '40%', color: 'white'}}/></div>}
     </main>)
 }

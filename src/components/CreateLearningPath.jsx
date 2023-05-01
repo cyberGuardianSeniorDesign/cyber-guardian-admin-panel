@@ -76,28 +76,46 @@ export default function CreateLearningPath(){
         let temp = content
 
         let data = {}
-
+        let newContent
         if(typeRadio == 'article'){
             data = articles.find(article => article._id == radioValue)
+            newContent = {
+                index: key,
+                contentType: typeRadio,
+                title: data.title,
+                img: data.thumbnail,
+                data: data,
+                description: '',
+                link: data._id
+            }
         } else if(typeRadio == 'checklist')
         {
             data = checklists.find(checklist => checklist._id == radioValue)
-            console.log(data)
+            newContent = {
+                index: key,
+                contentType: typeRadio,
+                title: data.title,
+                img: data.thumbnail,
+                data: data,
+                description: '',
+                link: data._id
+            }
         } else if(typeRadio == 'game')
         {
             data = games.find(game => game._id == radioValue)
+            let gameLink = data.title.toLowerCase().replace(/\s+/g,"-")
+             newContent = {
+                index: key,
+                contentType: typeRadio,
+                title: data.title,
+                img: data.thumbnail,
+                description: '',
+                link: gameLink
+            }
         }
 
         let key = uuid()
-        let newContent = {
-            index: key,
-            contentType: typeRadio,
-            title: data.title,
-            img: data.thumbnail,
-            data: data,
-            description: '',
-            link: data._id
-        }
+        
 
         temp.push(newContent)
        
@@ -202,16 +220,15 @@ export default function CreateLearningPath(){
                     <TableHead>
                         <TableRow sx={{width: '100%'}}>
                             <TableCell sx={{fontSize: 'large'}}>Title</TableCell>
-                            <TableCell sx={{fontSize: 'large'}}>Author</TableCell>
-                            <TableCell sx={{fontSize: 'large'}}>Level</TableCell>
+                            
+                            <TableCell sx={{fontSize: 'large'}}>Description</TableCell>
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
                     {games.map(game => {
                         return <TableRow>
-                            <TableCell><FormControlLabel key={game._id} value={game._id} control={<Radio/>} label={game.author} /></TableCell>
-                            <TableCell>{game.author}</TableCell>
-                            <TableCell>{game.level}</TableCell>
+                            <TableCell><FormControlLabel key={game._id} value={game._id} control={<Radio/>} label={game.title} /></TableCell>
+                            <TableCell>{game.description}</TableCell>
                         </TableRow>
                     })}
                 </Table>
@@ -347,7 +364,7 @@ export default function CreateLearningPath(){
 
             {content != [] ? <main className='learning-path-main'>
                 {content.map(data => {
-                    return <div className='learning-path-content-div'>
+                    return <div className='create-learning-path-content-div'>
                         <Tooltip>
                         <IconButton onClick={() => deleteItem(data.index)} sx={{position: 'relative', left: '-50%'}}>
                             <DeleteIcon sx={{color: '#1f1f28'}}/>
@@ -355,7 +372,6 @@ export default function CreateLearningPath(){
                         </Tooltip>
                         <h3 className='content-title-h3'>{data.contentType}: {data.title}</h3>
                         <TextField rows={10} multiline placeholder="Content Description..." value={data.description} onChange={e => handleContentDescChange(e, data.index)} sx={{width: '90%'}} />
-                        <h3 className='content-title-h3'>Link: <a className='content-link' target="_blank" href={data.link}>{data.link}</a></h3> 
                         
                     </div>
                 })}

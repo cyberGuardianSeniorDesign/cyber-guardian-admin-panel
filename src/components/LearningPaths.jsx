@@ -17,6 +17,9 @@ import Paper from '@mui/material/Paper'
 import Modal from '@mui/material/Modal'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
+import { ArrowBack } from "@material-ui/icons";
+import CircularProgress from "@mui/material/CircularProgress";
+
 export default function LearningPaths(){
     const navigate = useNavigate()
     const [learningPaths, setLearningPaths] = React.useState([])
@@ -27,6 +30,10 @@ export default function LearningPaths(){
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
     const [focusedPath, setFocusedPath] = React.useState('')
+
+    const goHome = () => {
+        navigate('/../')
+    }
 
     const handleEditLearningPath = (learningPath) => {
         navigate('edit/' + learningPath._id, {state: {learningPath: learningPath}})
@@ -85,12 +92,15 @@ export default function LearningPaths(){
 
         verifyToken()
         fetchLearningPaths()
-        setLoading(false)
+        setTimeout(() => setLoading(false), 400)
     }, [])
 
     return(<main >
         {!loading ? 
         <div className='checklists-page'>
+             <IconButton onClick={goHome} sx={{color: 'white', display: 'absolute', right: '40%'}}>
+                <ArrowBack /> <Typography sx={{fontSize: '16px'}}>Go Back</Typography>
+            </IconButton>
             <h1 className="home-h1">LEARNING PATHS</h1>
             <button className='create-btn' onClick={handleCreateLearningPath}>Create New Learning Path</button>
             {learningPaths.length > 0 ?
@@ -166,6 +176,6 @@ export default function LearningPaths(){
                     {successMsg}
                 </Alert>
             </Snackbar>
-        </div>:<span>Loading...</span>}
+        </div>:<div className="loading-div"><CircularProgress color="inherit" sx={{position: 'relative', top: '40%', color: 'white'}}/></div>}
     </main>)
 }
