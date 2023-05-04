@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import axios from 'axios'
-import { TextField, Tooltip, Typography } from "@mui/material"
+import { TableBody, TextField, Tooltip, Typography } from "@mui/material"
 import { useLocation, useNavigate } from "react-router-dom"
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -77,6 +77,8 @@ export default function CreateLearningPath(){
 
         let data = {}
         let newContent
+        let key = uuid()
+
         if(typeRadio == 'article'){
             data = articles.find(article => article._id == radioValue)
             newContent = {
@@ -115,7 +117,6 @@ export default function CreateLearningPath(){
             }
         }
 
-        let key = uuid()
         
 
         temp.push(newContent)
@@ -175,13 +176,15 @@ export default function CreateLearningPath(){
                         <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
+                <TableBody>
                 {articles.map(article => {
-                    return <TableRow>
+                    return <TableRow key={article._id}>
                         <TableCell><FormControlLabel key={article._id} value={article._id} control={<Radio/>} label={article.title} /></TableCell>
                         <TableCell>{article.author}</TableCell>
                         <TableCell>{article.level}</TableCell>
                     </TableRow>
                 })}
+                </TableBody>
            </Table>
         </RadioGroup>
         } 
@@ -200,14 +203,15 @@ export default function CreateLearningPath(){
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
-                    
+                    <TableBody>
                     {checklists.map(checklist => {
-                        return <TableRow>
+                        return <TableRow key={checklist._id}>
                             <TableCell><FormControlLabel key={checklist._id} value={checklist._id} control={<Radio/>} label={checklist.title} /></TableCell>
                             <TableCell>{checklist.author}</TableCell>
                             <TableCell>{checklist.level}</TableCell>
                         </TableRow>
                     })}
+                    </TableBody>
                 </Table>
             </RadioGroup>
         }
@@ -226,12 +230,14 @@ export default function CreateLearningPath(){
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
+                    <TableBody>
                     {games.map(game => {
-                        return <TableRow>
+                        return <TableRow key={game._id}>
                             <TableCell><FormControlLabel key={game._id} value={game._id} control={<Radio/>} label={game.title} /></TableCell>
                             <TableCell>{game.description}</TableCell>
                         </TableRow>
                     })}
+                    </TableBody>
                 </Table>
             </RadioGroup>
         }
