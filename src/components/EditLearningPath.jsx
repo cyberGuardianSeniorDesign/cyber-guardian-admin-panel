@@ -99,7 +99,7 @@ export default function EditLearningPath(){
                 contentType: typeRadio,
                 title: data.title,
                 img: data.thumbnail,
-                data: data.data,
+                data: data,
                 description: '',
                 link: data._id,
                 new: true
@@ -107,12 +107,13 @@ export default function EditLearningPath(){
         } else if(typeRadio == 'checklist')
         {
             data = checklists.find(checklist => checklist._id == radioValue)
+            console.log(data)
             newData = {
                 index: key,
                 contentType: typeRadio,
                 title: data.title,
                 img: data.thumbnail,
-                data: data.data,
+                data: data,
                 description: '',
                 link: data._id,
                 new: true
@@ -126,7 +127,7 @@ export default function EditLearningPath(){
                 contentType: typeRadio,
                 title: data.title,
                 img: data.thumbnail,
-                data: data.data,
+                data: data,
                 description: '',
                 link: gameLink,
                 new: true

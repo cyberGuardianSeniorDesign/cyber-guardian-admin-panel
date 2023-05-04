@@ -109,6 +109,7 @@ export default function CreateLearningPath(){
                 contentType: typeRadio,
                 title: data.title,
                 img: data.thumbnail,
+                data: data,
                 description: '',
                 link: gameLink
             }

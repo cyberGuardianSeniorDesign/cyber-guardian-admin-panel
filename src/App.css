@@ -113,6 +113,11 @@ input[type="file"] {
   justify-content: space-between;
 }
 
+.article-content-info{
+  margin-top: 25px;
+  padding-left: 25px;
+}
+
 /* Content */
 .text-div {
   align-items: center;
@@ -341,7 +346,8 @@ input[type="file"] {
   width: 70%;
   margin: 1em auto;
   padding: 1em 1em 1em 4em;
-  
+  max-height: 70vh;
+  overflow-y: scroll;
 }
 
 .content-title-h3 {
@@ -428,12 +434,12 @@ input[type="file"] {
 
 .view-page-title {
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: xx-large;
 }
 
 .view-page-description {
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   font-size: large;
-  margin-right: 4em;
 }
 
 .view-page-text {
@@ -468,6 +474,17 @@ input[type="file"] {
   margin-top: .5em;
   padding-left: .5em;
   text-align: left;
+}
+
+.view-page-description {
+  margin-left: 12.5%;
+}
+
+.view-page-info {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 14px;
+  color: #787878;
+  margin-top: -12.5px;
 }
 
 .wrapper-class {
@@ -555,7 +572,14 @@ input[type="file"] {
   overflow-x: hidden;
 }
 
-strong {
+.article-text-content p {
+  padding: 2.5px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-align: left;
+  line-height: 35px;
+}
+
+.article-text-content strong {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 

@@ -20,7 +20,6 @@ export default function NewContent({current, deleteItem, itemKey}) {
     const [caption, setCaption] = React.useState(current.caption || '')
 
     const deleteContent = () => {
-        console.log(content)
         deleteItem(content)
     }
 

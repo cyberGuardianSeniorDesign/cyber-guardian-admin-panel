@@ -10,7 +10,8 @@ import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Tooltip from '@mui/material/Tooltip'
 import { v4 as uuid } from 'uuid';
-
+import NewContent from "./NewContent";
+ 
 export default function CreateChecklist(){
     const navigate = useNavigate()
     const { state } = useLocation()
@@ -64,15 +65,16 @@ export default function CreateChecklist(){
         forceUpdate()
     }
 
-    const deleteItem = (index) => {
+    const deleteItem = (item) => {
         let temp = listItems 
-        temp.splice(index, 1)
-        for(let i = index; i < temp.length; i++){
-            temp[i].index = i 
+        
+        temp = temp.filter(listItem => listItem.index !== item.index)
+        if(item.contentType == 'image') {
+            let tempImg = images.filter(imgObj => imgObj.key != temp.key)
+            setImages([...tempImg])
         }
-         console.log(temp)
-        setListItems(temp)
-        forceUpdate()
+        
+        setListItems([...temp])
     }
 
     const addImage = async(e) => {
@@ -250,12 +252,18 @@ export default function CreateChecklist(){
                 </header>
                 <main className='checklist-content'>
                 {listItems.map(data => {
-                    return <div className='checklist-item-div'>
-                        <IconButton onClick={() => deleteItem(data.index)}>
-                            <DeleteIcon sx={{color: 'white'}}/>
-                        </IconButton>
-                        <TextField placeholder="Checklist Item" onChange={e => handleListItemChange(e, data.index)} sx={{backgroundColor: '#e3e3e3', borderRadius: '5px', height: '100%', width: '80%'}}/>
-                    </div>
+                    if(data.contentType == 'text'){
+                        return <div key={data.index} className='checklist-item-div'>
+                            <IconButton onClick={() => deleteItem(data)}>
+                                <DeleteIcon sx={{color: 'white'}}/>
+                            </IconButton>
+                            <TextField defaultValue={data.text} placeholder="Checklist Item" onChange={e => handleListItemChange(e, data)} sx={{backgroundColor: '#e3e3e3', borderRadius: '5px', height: '100%', width: '80%'}}/>
+                        </div>
+                    } else {
+                        return <div key={data.index} className='checklist-item-div'>
+                        <NewContent key={data.index} current={data} deleteItem={deleteItem} itemKey={data.key}/>
+                        </div>
+                    }
                 })}
                 <div className="button-div">
                     <button className='add-txt-btn' onClick={addListItem}>Add List Item</button>

@@ -17,12 +17,6 @@ export default function ViewArticle({dbArticle})
     const [author, setAuthor] = React.useState('')
     const [level, setLevel] = React.useState('Apprentice')
     const [content, setContent] = React.useState([])
-    const [html, setHtml] = React.useState([])
-    const [editorState, setEditorState] = React.useState()
-
-    const renderArticle = () => {
-      
-    }
 
     React.useEffect(() => {
       const verifyToken = async() => {
@@ -81,6 +75,10 @@ export default function ViewArticle({dbArticle})
     return<div>
       {!loading ? <div className='view-page'> 
         <h1 className='view-page-title'>{article.title}</h1>
+        <div className="article-content-info">
+          <p className="view-page-info">Written By {author}</p>
+          <p className="view-page-info">Level: {level}</p>
+        </div>
         {article.content.map(content => {
         if(content.contentType == 'text'){
           let html = draftToHtml(JSON.parse(content.raw))
